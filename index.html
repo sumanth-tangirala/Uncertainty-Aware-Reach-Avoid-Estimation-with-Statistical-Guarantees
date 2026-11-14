@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PARSE: Uncertainty-Aware Reach-Avoid Estimation</title>
+<meta name="description" content="Reach-avoid estimation with abstention and finite-sample statistical guarantees, using conditional flow matching.">
+<style>
+:root{--bg:#fff;--fg:#1a1d23;--mut:#5b6472;--acc:#2f5bd8;--card:#f4f6fa;--bd:#e1e5ec}
+@media (prefers-color-scheme:dark){:root{--bg:#11141a;--fg:#e8ebf0;--mut:#9aa4b2;--acc:#7da2ff;--card:#1b1f27;--bd:#2b313c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:800px;margin:0 auto;padding:48px 16px 64px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.2;margin:0 0 8px}
+h2{margin:44px 0 10px;font-size:1.4rem}
+.sub{color:var(--mut);margin:0 0 24px}
+.authors{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 4px}
+.authors span{white-space:nowrap}
+.aff{color:var(--mut);margin:0 0 4px}
+.venue{color:var(--mut);font-size:.95rem}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+.btns a{padding:9px 18px;border-radius:8px;background:var(--acc);color:#fff;text-decoration:none;font-weight:600}
+.btns a.alt{background:none;color:var(--acc);border:1px solid var(--acc)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 20px}
+ul{padding-left:1.2em}
+li{margin:6px 0}
+pre{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.steps .card{padding:14px 16px}
+.steps b{display:block;margin-bottom:4px}
+footer{color:var(--mut);font-size:.9rem;margin-top:48px}
+</style>
+</head>
+<body>
+<main>
+<h1>Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees</h1>
+<p class="sub">PARSE: Prediction with Abstention for Reach-avoid under Statistical Error control</p>
+<p class="authors"><span>Sumanth Tangirala*</span><span>Dhruv Metha Ramesh*</span><span>Ewerton R. Vieira</span><span>Abdeslam Boularias</span><span>Ying Hung</span><span>Kostas E. Bekris</span></p>
+<p class="aff">Rutgers University &nbsp;·&nbsp; *equal contribution</p>
+<p class="venue">L4DC 2027 (PMLR, under submission)</p>
+<div class="btns">
+<a href="assets/paper.pdf">Paper (PDF)</a>
+<a class="alt" href="assets/supplementary.pdf">Supplementary (PDF)</a>
+<a class="alt" href="https://github.com/sumanth-tangirala/Uncertainty-Aware-Reach-Avoid-Estimation-with-Statistical-Guarantees">GitHub</a>
+</div>
+
+<h2>Abstract</h2>
+<p>Reach-avoid estimation predicts whether a controller reaches its goal before failure from a given initial state. Limited trajectory data leaves predictions uncertain even under deterministic dynamics. Allowing abstention can limit errors, but the predictor should still correctly identify as many outcomes as possible.</p>
+<p>PARSE uses conditional flow matching to express uncertainty about the terminal state of each initial state through a predictive distribution. Predicted terminal states satisfying neither success nor failure conditions expose model error, while valid samples can disagree on the outcome. These signals guide additional trajectory sampling; thresholds on outcome probabilities determine whether to return success, failure, or abstention. Independent calibration provides simultaneous finite-sample bounds, at prescribed confidence, on the error rates among success and failure predictions for new queries.</p>
+<p>At matched trajectory budgets, adaptive sampling improves mean recall for both outcomes after certification relative to uniform sampling in all six settings with linear-quadratic and reinforcement-learning controllers.</p>
+
+<h2>Method</h2>
+<div class="steps">
+<div class="card"><b>1. Generative terminal states</b>Conditional flow matching learns a distribution over the terminal state of each initial state.</div>
+<div class="card"><b>2. Uncertainty signals</b>Samples that meet neither the goal nor failure condition give <em>invalid mass</em>; valid samples may <em>disagree</em> on the outcome.</div>
+<div class="card"><b>3. Adaptive sampling</b>Both signals pick initial states where extra trajectories help most.</div>
+<div class="card"><b>4. Certified abstention</b>Fixed-sequence testing on calibration data picks thresholds with finite-sample error bounds on returned predictions.</div>
+</div>
+
+<h2>Contributions</h2>
+<ul>
+<li>A generative terminal-state approach to reach-avoid estimation with explicit abstention.</li>
+<li>Adaptive trajectory sampling using invalid mass and disagreement among valid predictions.</li>
+<li>A proof of simultaneous finite-sample error bounds using fixed-sequence testing.</li>
+<li>An empirical study of predictor choice, adaptive sampling, and uncertainty signals across six LQR and RL settings.</li>
+</ul>
+
+<h2>BibTeX</h2>
+<pre>@inproceedings{tangirala2027parse,
+  title     = {Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees},
+  author    = {Tangirala, Sumanth and Ramesh, Dhruv Metha and Vieira, Ewerton R. and Boularias, Abdeslam and Hung, Ying and Bekris, Kostas E.},
+  booktitle = {Proceedings of Machine Learning Research},
+  year      = {2027}
+}</pre>
+<footer>Rutgers University</footer>
+</main>
+</body>
+</html>
