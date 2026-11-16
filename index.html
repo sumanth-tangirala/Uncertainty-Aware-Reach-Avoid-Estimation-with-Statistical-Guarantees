@@ -97,7 +97,7 @@
           <figcaption>Ground truth</figcaption>
           <div class="gt-frame"><canvas id="ex-gt" aria-label="Ground-truth outcomes"></canvas><svg class="overlay" id="ex-gt-ov" aria-hidden="true"></svg></div>
           <p class="gt-axes" id="ex-axes"></p>
-          <ul class="legend onplate" id="ex-legend"></ul>
+          <ul class="legend" id="ex-legend"></ul>
         </figure>
         <figure class="map" id="ex-map-adaptive"></figure>
         <figure class="map" id="ex-map-uniform"></figure>
@@ -112,7 +112,7 @@
 
       <div class="ex-note prose">
         <p><strong>What is shown.</strong> For the pendulum, the maps cover every state of the 158 × 315 lattice that spans its state space. For the other settings they show a two-dimensional slice with the remaining coordinates held fixed, limited to the range from which initial states are sampled. In every map, the pendulum's included, each cell is classified from <span class="tex" data-tex="M = 100"></span> terminal-state samples drawn with that round's model and that round's certified thresholds (<span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>). The certificate bounds error rates over new queries drawn from the same distribution as the calibration queries, not the error at any single state, and a slice with fixed coordinates is not such a draw. The cells are not the test queries and use fresh terminal-state samples.</p>
-        <p>The numbers under the maps are the selected seed's rates on the test set. The curves repeat the certified learning curves of the paper (Figure 5 and Appendix B.3) with the three-seed mean, the min–max range, and the selected seed. Prediction errors average only the seeds that predicted the outcome. Before the first acquisition round the two arms have the same training data, and one model is shown for both, as in the paper's curves. When no threshold setting passes the calibration test, the predictor abstains everywhere.</p>
+        <p>The numbers under the maps are the selected seed's rates on the test set. The curves repeat the certified learning curves of the paper (Figure 5 and Appendix B.3) with the three-seed mean and the selected seed. Prediction errors average only the seeds that predicted the outcome. Before the first acquisition round the two arms have the same training data, and one model is shown for both, as in the paper's curves. When no threshold setting passes the calibration test, the predictor abstains everywhere.</p>
       </div>
     </div>
     <noscript><p class="prose">The interactive view needs JavaScript. The same results are in Figure 5 of the paper and Appendix B.3 of the supplement.</p></noscript>

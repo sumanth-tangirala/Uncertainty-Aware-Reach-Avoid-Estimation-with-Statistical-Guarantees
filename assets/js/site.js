@@ -163,17 +163,17 @@
 
     /* ---- map geometry: integer cell sizes, so every cell has the same width and height */
     function geometry(P) {
+      var dpr = Math.max(1, window.devicePixelRatio || 1);
       var avail = Math.max(120, Math.min(panels.adaptive.fig.clientWidth - 36, 440));
-      var sx = Math.max(1, Math.floor(avail / P.nx));
-      var W = P.nx * sx;
-      var sy = Math.max(1, Math.round(Math.min(W, 400) / P.ny));
-      return { W: W, H: P.ny * sy };
+      var kx = Math.max(1, Math.floor(avail * dpr / P.nx));          /* device pixels per cell */
+      var W = P.nx * kx / dpr;
+      var ky = Math.max(1, Math.round(Math.min(W, 400) * dpr / P.ny));
+      return { W: W, H: P.ny * ky / dpr, pw: P.nx * kx, ph: P.ny * ky };
     }
 
-    function drawFrame(canvas, img, frame, P, W, H) {
-      var dpr = Math.max(1, Math.round(window.devicePixelRatio || 1));
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    function drawFrame(canvas, img, frame, P, g) {
+      canvas.width = g.pw; canvas.height = g.ph;
+      canvas.style.width = g.W + 'px'; canvas.style.height = g.H + 'px';
       var ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -233,7 +233,7 @@
         ['<span class="sw" style="background:var(--m-fp)"></span>', 'Wrong success (FP)'],
         ['<span class="sw" style="background:var(--m-fn)"></span>', 'Wrong failure (FN)'],
         ['<span class="sw" style="background:var(--m-abs)"></span>', 'Abstention'],
-        ['<span class="sw-line"></span>', 'Ground-truth boundary']
+        ['<span class="sw sw-bnd"></span>', 'Ground-truth boundary']
       ];
       if (S.planes[state.pi].starts && state.starts) {
         L.push(['<span class="sw-dot"></span>', 'Training initial state']);
@@ -250,7 +250,7 @@
         load(P.sprites[arm.id][c.seed]).then(function (im) {
           var now = cur();
           if (now.P !== P || now.seed !== c.seed || state.round !== r) return;
-          drawFrame(p.canvas, im, r, P, g.W, g.H);
+          drawFrame(p.canvas, im, r, P, g);
         });
         p.canvas.setAttribute('aria-label', 'Predictions of ' + (arm.id === 'adaptive' ? 'PARSE' : 'Unif-PARSE') + ' on ' + S.title +
           ' at ' + countLabel(S.train[r]) + ' training trajectories, seed ' + (state.seed + 1));
@@ -362,13 +362,8 @@
           var pts = S.curves[arm.id][m.key], sv = S.seeds[c.seed][arm.id];
           var yy = function (v) { return y(Math.min(v, ymax)).toFixed(1); };
           runs(NR, function (i) { return pts[i].n > 0; }).forEach(function (run) {
-            var up = '', dn = '', line = '';
-            for (var i = run[0]; i <= run[1]; i++) {
-              up += (i === run[0] ? 'M' : 'L') + x(i).toFixed(1) + ',' + yy(pts[i].max);
-              dn = 'L' + x(i).toFixed(1) + ',' + yy(pts[i].min) + dn;
-              line += (i === run[0] ? 'M' : 'L') + x(i).toFixed(1) + ',' + yy(pts[i].mean);
-            }
-            if (run[1] > run[0]) s += '<path class="band" fill="' + m.color + '" d="' + up + dn + 'Z"></path>';
+            var line = '';
+            for (var i = run[0]; i <= run[1]; i++) line += (i === run[0] ? 'M' : 'L') + x(i).toFixed(1) + ',' + yy(pts[i].mean);
             s += '<path class="mean" stroke="' + m.color + '"' + (arm.dash ? ' stroke-dasharray="' + arm.dash + '"' : '') + ' d="' + line + '"></path>';
           });
           pts.forEach(function (p, i) {
@@ -407,10 +402,14 @@
     $('#ex-chart-legend').innerHTML =
       '<li><svg width="34" height="10" aria-hidden="true"><line x1="1" x2="33" y1="5" y2="5" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="5" r="2.6" fill="currentColor"/></svg><span>' + ARMS[0].name + '</span></li>' +
       '<li><svg width="34" height="10" aria-hidden="true"><line x1="1" x2="33" y1="5" y2="5" stroke="currentColor" stroke-width="2" stroke-dasharray="6.4 2.6 1.8 2.6"/><rect x="14.5" y="2.5" width="5" height="5" fill="var(--band)" stroke="currentColor"/></svg><span>' + ARMS[1].name + '</span></li>' +
-      '<li><span>Thick line: three-seed mean. Band: min–max. Thin line ending at the large marker: selected seed, up to the selected budget.</span></li>';
+      '<li><span>Thick line: three-seed mean. Thin line ending at the large marker: selected seed, up to the selected budget.</span></li>';
 
+    function budgetHeight() {
+      document.documentElement.style.setProperty('--budget-h', $('.ex-budget', root).offsetHeight + 'px');
+    }
     var rt = null;
-    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 120); });
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { budgetHeight(); layout(); }, 120); });
+    budgetHeight();
     controls();
     layout();
   }
