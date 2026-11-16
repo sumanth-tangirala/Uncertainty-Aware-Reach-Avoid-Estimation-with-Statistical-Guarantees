@@ -352,7 +352,6 @@
           s += '<line class="' + (m.err && v === 5 ? 'limit' : 'grid') + '" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '"></line>';
           s += '<text x="' + (ml - 4) + '" y="' + (y(v) + 3.3).toFixed(1) + '" text-anchor="end">' + v + '</text>';
         });
-        if (m.err) s += '<text x="' + (W - mr) + '" y="' + (y(5) - 3).toFixed(1) + '" text-anchor="end">5% error limit</text>';
         s += '<line class="axis" x1="' + ml + '" x2="' + (W - mr) + '" y1="' + (mt + ph) + '" y2="' + (mt + ph) + '"></line>';
         [0, 5, NR - 1].forEach(function (e, i) {
           s += '<text x="' + x(e).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (i === 0 ? 'start' : i === 2 ? 'end' : 'middle') + '">' + countLabel(S.train[e]) + '</text>';
@@ -383,6 +382,10 @@
             else s += '<rect class="now" x="' + (x(r) - 3.6).toFixed(1) + '" y="' + (+yy(sv[r][m.key]) - 3.6).toFixed(1) + '" width="7.2" height="7.2" fill="var(--surface)" style="stroke:' + m.color + ';stroke-width:2"></rect>';
           }
         });
+        if (m.err) {      /* the limit's label sits on a plate above the lines and the cursor */
+          s += '<rect x="' + (W - mr - 65) + '" y="' + (y(5) - 12.5).toFixed(1) + '" width="65" height="11.5" fill="var(--surface)"></rect>' +
+            '<text x="' + (W - mr - 1.5) + '" y="' + (y(5) - 3.5).toFixed(1) + '" text-anchor="end">5% error limit</text>';
+        }
         s += '</svg>';
         html += '<div class="chart"><div class="chart-title">' + tex(m.tex) + '<span class="what" title="' + m.what + ', in percent">' + m.what + ' (%)</span></div>' + s + '</div>';
       });
