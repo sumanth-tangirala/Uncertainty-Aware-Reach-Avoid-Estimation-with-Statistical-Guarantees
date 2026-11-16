@@ -16,18 +16,50 @@
 </head>
 <body>
 
-<nav class="topnav" aria-label="Sections">
-  <div class="wrap topnav-in">
-    <a class="brand" href="#top"><span class="mn">PARSE</span></a>
+<nav class="topnav" aria-label="Site">
+  <div class="topnav-in">
+    <a class="brand" href="index.html"><span class="mn">PARSE</span></a>
+    <details class="toc-menu" id="toc-menu">
+      <summary>Contents</summary>
+      <div class="toc-pop" id="toc-pop"></div>
+    </details>
     <div class="topnav-links">
       <a href="#explorer">Explorer</a>
       <a href="#method">Method</a>
-      <a href="#guarantee">Guarantee</a>
       <a href="#results">Results</a>
-      <a href="#cite">Cite</a>
+      <a href="experiments.html">Additional experiments</a>
+      <a href="assets/paper.pdf">Paper PDF</a>
+      <a href="assets/supplementary.pdf">Supplement PDF</a>
     </div>
   </div>
 </nav>
+
+<div class="layout">
+<aside class="toc" id="toc" aria-label="Contents">
+  <p class="toc-head">Contents</p>
+  <nav id="toc-nav">
+    <ol class="toc-list">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#explorer">Predictions as data grows</a></li>
+      <li><a href="#idea">Why abstain</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#guarantee">Statistical guarantee</a></li>
+      <li><a href="#results">Results</a>
+        <ol>
+          <li><a href="#benchmarks">Settings</a></li>
+          <li><a href="#comparison">Comparison tables</a></li>
+          <li><a href="#identical">Identical training data</a></li>
+          <li><a href="#signals">Uncertainty signals</a></li>
+          <li><a href="#more">Additional experiments</a></li>
+        </ol>
+      </li>
+      <li><a href="experiments.html" class="toc-out">Additional experiments page</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#cite">BibTeX</a></li>
+    </ol>
+  </nav>
+</aside>
+<div class="content">
 
 <header class="hero" id="top">
   <div class="wrap">
@@ -175,7 +207,7 @@
   </div>
   <div class="prose">
     <p><span class="tex" data-tex="\mathrm{Err}_{\ell}"></span> is the probability that a returned outcome <span class="tex" data-tex="\ell"></span> is wrong for a new query drawn from the same distribution as the calibration queries, under the same prediction protocol. Assumption 1 requires the error limits, the confidence parameter, and the calibration-set size to be fixed before the calibration data is drawn, and the calibration queries to be independent copies of a new query, jointly independent of the trained estimator and of the threshold sequence.</p>
-    <p>Certification tests a predetermined sequence of threshold settings with one-sided Clopper–Pearson bounds and stops at the first one that does not pass, returning the last setting that passed. Each bound uses the full <span class="tex" data-tex="\delta"></span>, with no correction for the number of threshold settings or outcomes. If no setting passes, the predictor abstains for every query. The sequence starts with conservative settings and progresses toward higher recall. The bounds quantify the reliability of both decisions, even when the predictor abstains on many other states. The experiments use <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>.</p>
+    <p>Certification tests a predetermined sequence of threshold settings with one-sided Clopper–Pearson bounds and stops at the first one that does not pass, returning the last setting that passed. Each bound uses the full <span class="tex" data-tex="\delta"></span>, with no correction for the number of threshold settings or outcomes. If no setting passes, the predictor abstains for every query. The sequence starts with conservative settings and progresses toward higher recall. The bounds quantify the reliability of both decisions, even when the predictor abstains on many other states. The experiments use <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>. Appendix A of the supplement gives the fitted threshold search, the proof of Theorem 1, and the construction of the threshold sequence.</p>
   </div>
 </section>
 
@@ -183,55 +215,65 @@
   <div class="wrap">
     <div class="prose">
       <h2>Results</h2>
-      <p>The six settings span 2 to 12 dimensions and use LQR controllers or RL controllers trained with PPO. The pendulum and cartpole stabilize an upright equilibrium, with the cartpole also targeting a fixed cart position. Both quadrotors target level hover at unit height, with zero yaw for the spatial quadrotor. Reported rates are mean test percentages over three seeds.</p>
+      <p>The six settings span 2 to 12 dimensions and use LQR controllers or RL controllers trained with PPO. Reported rates are mean test percentages over three seeds. This section follows the main paper. The experiments of the supplement are on the <a href="experiments.html">Additional experiments</a> page.</p>
     </div>
 
-    <div class="bench">
-      <figure class="plate systems">
-        <div class="systems-row">
-          <div class="sys"><img src="assets/figures/system_pendulum.png" alt="Pendulum" width="244" height="300"><span>Pendulum</span></div>
-          <div class="sys"><img src="assets/figures/system_cartpole.png" alt="Cartpole" width="311" height="300"><span>Cartpole</span></div>
-          <div class="sys wide"><img src="assets/figures/system_planar_quadrotor.png" alt="Planar quadrotor" width="902" height="300"><span>Planar quadrotor</span></div>
-          <div class="sys wide"><img src="assets/figures/system_spatial_quadrotor.png" alt="Spatial quadrotor" width="770" height="300"><span>Spatial quadrotor</span></div>
-        </div>
-        <figcaption>Benchmark systems (Appendix B.1 of the supplement).</figcaption>
-      </figure>
-      <div class="settings-tbl" id="settings-tbl" hidden>
-        <div class="tbl-scroll"><table id="settings-table"></table></div>
-        <p class="tbl-cap">Number of training trajectories and of validation, calibration, and test states, and test success rates (Table 1 of the paper). Low success rates reflect evaluation across the state space, including states outside the controllers' training or recovery regions, such as upside-down quadrotor states.</p>
-      </div>
-    </div>
-
-    <div class="tbl" id="tbl" hidden>
-      <div class="ex-controls">
-        <div class="ctl">
-          <span class="ctl-label" id="tbl-setting-label">Setting</span>
-          <div class="seg" id="tbl-settings" role="radiogroup" aria-labelledby="tbl-setting-label"></div>
-        </div>
-        <div class="ctl">
-          <span class="ctl-label" id="tbl-mode-label">Thresholds</span>
-          <div class="seg" id="tbl-modes" role="radiogroup" aria-labelledby="tbl-mode-label"></div>
+    <div class="sub" id="benchmarks">
+      <h3>Settings</h3>
+      <div class="prose"><p>The pendulum and cartpole stabilize an upright equilibrium, with the cartpole also targeting a fixed cart position. Both quadrotors target level hover at unit height, with zero yaw for the spatial quadrotor.</p></div>
+      <div class="bench">
+        <figure class="plate systems">
+          <div class="systems-row">
+            <div class="sys"><img src="assets/figures/system_pendulum.png" alt="Pendulum" width="244" height="300"><span>Pendulum</span></div>
+            <div class="sys"><img src="assets/figures/system_cartpole.png" alt="Cartpole" width="311" height="300"><span>Cartpole</span></div>
+            <div class="sys wide"><img src="assets/figures/system_planar_quadrotor.png" alt="Planar quadrotor" width="902" height="300"><span>Planar quadrotor</span></div>
+            <div class="sys wide"><img src="assets/figures/system_spatial_quadrotor.png" alt="Spatial quadrotor" width="770" height="300"><span>Spatial quadrotor</span></div>
+          </div>
+          <figcaption>Benchmark systems (Appendix B.1 of the supplement).</figcaption>
+        </figure>
+        <div class="settings-tbl" id="settings-tbl" hidden>
+          <div class="tbl-scroll"><table id="settings-table"></table></div>
+          <p class="tbl-cap">Number of training trajectories and of validation, calibration, and test states, and test success rates (Table 1 of the paper). Low success rates reflect evaluation across the state space, including states outside the controllers' training or recovery regions, such as upside-down quadrotor states.</p>
         </div>
       </div>
-      <div class="tbl-scroll"><table id="tbl-table"></table></div>
-      <p class="tbl-cap" id="tbl-cap"></p>
     </div>
 
-    <div class="findings prose">
-      <p><strong>Against prior-method adaptations.</strong> At the reported trajectory budgets, <span class="mn">PAR</span> achieves higher mean success recall than all four prior-method adaptations at fitted thresholds in every setting. Its largest advantage occurs on planar quadrotor RL (6D): 77.9% recall versus 24.2% for Part-X, with lower success prediction error. The comparison evaluates these adaptations, not the original methods' guarantees.</p>
-      <p><strong>With certification.</strong> <span class="mn">PARSE</span> has the highest mean recall for both outcomes among the three learned predictors on the pendulum and all three quadrotor settings. Both cartpole settings are exceptions: BNN-Label has higher success recall under LQR, while <span class="mn">PARSE</span>-BNN leads both recalls under RL.</p>
-      <p><strong>Adaptive sampling.</strong> With certification, adaptive sampling raises both mean recalls and reduces abstention in every setting relative to uniform sampling. The recall gains are larger under RL and largest on the planar quadrotor (6D).</p>
+    <div class="sub" id="comparison">
+      <h3>Comparison tables</h3>
+      <div class="tbl" data-table="main" hidden></div>
+      <div class="findings prose">
+        <p><strong>Against prior-method adaptations.</strong> At the reported trajectory budgets, <span class="mn">PAR</span> achieves higher mean success recall than all four prior-method adaptations at fitted thresholds in every setting. Its largest advantage occurs on planar quadrotor RL (6D): 77.9% recall versus 24.2% for Part-X, with lower success prediction error. The comparison evaluates these adaptations, not the original methods' guarantees.</p>
+        <p><strong>With certification.</strong> <span class="mn">PARSE</span> has the highest mean recall for both outcomes among the three learned predictors on the pendulum and all three quadrotor settings. Both cartpole settings are exceptions: BNN-Label has higher success recall under LQR, while <span class="mn">PARSE</span>-BNN leads both recalls under RL.</p>
+        <p><strong>Adaptive sampling.</strong> With certification, adaptive sampling raises both mean recalls and reduces abstention in every setting relative to uniform sampling. The recall gains are larger under RL and largest on the planar quadrotor (6D).</p>
+      </div>
     </div>
 
     <div class="figs">
-      <figure class="plate">
-        <img src="assets/figures/predictor_comparison_compact.svg" alt="Scatter panels of recall against prediction error for success and failure predictions on spatial quadrotor LQR and cartpole RL, for Unif-PAR, Unif-PAR-BNN and Unif-BNN-Label, each at fitted and certified thresholds with a line joining the two." width="346" height="332">
-        <figcaption>Fitted and certified predictors on identical uniform training data, shown as seed means with min–max bars. On spatial quadrotor LQR, Unif-<span class="mn">PAR</span> retains far more correct failure predictions after certification than Unif-BNN-Label (90.3% versus 37.0% recall), despite similar fitted recall. This higher recall comes with higher failure prediction error. On cartpole RL, however, Unif-BNN-Label retains higher success recall and similar failure recall. Terminal-state supervision alone therefore does not ensure higher recall. (Figure 3 of the paper.)</figcaption>
-      </figure>
-      <figure class="plate">
-        <img src="assets/figures/pendulum_coverage_acquisition_2x2.svg" alt="Four maps of the pendulum state space after two acquisition rounds: distance to training states, invalid mass I, weighted disagreement D, and acquisition score U with the next selected initial states. Three circled regions mark a boundary region with dense coverage, a well-covered region with large invalid mass, and a sparsely covered boundary region." width="302" height="326">
-        <figcaption>Training coverage and acquisition signals for <span class="mn">PAR</span> on pendulum LQR. Across three pendulum seeds (Appendix D), regions sparsely covered by training data show large invalid mass, as in circled region 3, although large invalid mass also occurs in well-covered regions such as region 2. High disagreement occurs almost exclusively where training coverage is dense and concentrates near the outcome boundary, as in region 1. (Figure 4 of the paper.)</figcaption>
-      </figure>
+      <div class="sub" id="identical">
+        <h3>Identical training data</h3>
+        <figure class="plate">
+          <img src="assets/figures/predictor_comparison_compact.svg" alt="Scatter panels of recall against prediction error for success and failure predictions on spatial quadrotor LQR and cartpole RL, for Unif-PAR, Unif-PAR-BNN and Unif-BNN-Label, each at fitted and certified thresholds with a line joining the two." width="346" height="332">
+          <figcaption>Fitted and certified predictors on identical uniform training data, shown as seed means with min–max bars. On spatial quadrotor LQR, Unif-<span class="mn">PAR</span> retains far more correct failure predictions after certification than Unif-BNN-Label (90.3% versus 37.0% recall), despite similar fitted recall. This higher recall comes with higher failure prediction error. On cartpole RL, however, Unif-BNN-Label retains higher success recall and similar failure recall. Terminal-state supervision alone therefore does not ensure higher recall. (Figure 3 of the paper. <a href="experiments.html#x-identical">All six settings</a>.)</figcaption>
+        </figure>
+      </div>
+      <div class="sub" id="signals">
+        <h3>Uncertainty signals</h3>
+        <figure class="plate">
+          <img src="assets/figures/pendulum_coverage_acquisition_2x2.svg" alt="Four maps of the pendulum state space after two acquisition rounds: distance to training states, invalid mass I, weighted disagreement D, and acquisition score U with the next selected initial states. Three circled regions mark a boundary region with dense coverage, a well-covered region with large invalid mass, and a sparsely covered boundary region." width="302" height="326">
+          <figcaption>Training coverage and acquisition signals for <span class="mn">PAR</span> on pendulum LQR. Across three pendulum seeds (Appendix D), regions sparsely covered by training data show large invalid mass, as in circled region 3, although large invalid mass also occurs in well-covered regions such as region 2. High disagreement occurs almost exclusively where training coverage is dense and concentrates near the outcome boundary, as in region 1. (Figure 4 of the paper. <a href="experiments.html#x-coverage">Extended analysis</a>.)</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="sub more-card" id="more">
+      <h3>Additional experiments</h3>
+      <div class="prose"><p>The supplement's experiments have their own page, in four groups.</p></div>
+      <ul class="more-list">
+        <li><a href="experiments.html#g-sampling">Sampling</a><span>Learning curves in all settings, adaptive fraction, acquisition score, samples per query.</span></li>
+        <li><a href="experiments.html#g-thresholds">Thresholds and certification</a><span>Objective weight, error limits and confidence, conservative certification, observed test errors above the error limit.</span></li>
+        <li><a href="experiments.html#g-predictors">Predictors</a><span>Fitted and certified predictors on identical data, MLP predictors, controller and state dimension, Part-X region classifications.</span></li>
+        <li><a href="experiments.html#g-uncertainty">Uncertainty and abstention</a><span>Predictive signals and training coverage, threshold-dependent abstention.</span></li>
+      </ul>
     </div>
   </div>
 </section>
@@ -262,6 +304,8 @@
     <p>Rutgers University</p>
   </div>
 </footer>
+</div>
+</div>
 
 <script src="assets/vendor/katex/katex.min.js"></script>
 <script src="assets/explorer/data.js"></script>

@@ -417,43 +417,141 @@
     layout();
   }
 
-  /* ================================================================== results table */
-  function table() {
-    var root = $('#tbl');
-    if (!D || !root || !D.tables) return;
+  /* ================================================================== tables of rates, one setting at a time */
+  var HEAD5 = [REC_S + '\\uparrow', ERR_S + '\\downarrow', REC_F + '\\uparrow', ERR_F + '\\downarrow', ABST + '\\downarrow'];
+  var A05 = '\\alpha_{\\mathrm{s}} = \\alpha_{\\mathrm{f}} = \\delta = 0.05';
+  var SHADE = 'For each outcome ' + texp('\\ell', ',') + ' shading marks the row with the lowest ' +
+    texp('(1-w)\\,\\widehat{\\mathrm{Err}}_\\ell + w\\,(1-\\widehat{\\mathrm{Rec}}_\\ell)') + ' at ' + texp('w = 0.2', '.');
+  var MEANS = 'Entries are mean test percentages over three seeds. A seed with no predictions for an outcome contributes zero recall and is excluded from that outcome\'s error average.';
+  var TABLES = {
+    main: {
+      head: 'Method', group: true,
+      modes: [{ key: 'fitted', label: 'Fitted on validation data' }, { key: 'certified', label: 'Certified on calibration data' }],
+      cap: {
+        fitted: 'Comparison at fitted thresholds (Table 2 of the paper). ' + MEANS + ' ' + SHADE +
+          ' A dash means the outcome was never predicted in any seed. DeepReach, Lyapunov NN, MORALS and Part-X are adaptations that use the same validation data and error–recall objective to tune their prediction thresholds.',
+        certified: 'Certification of adaptive predictors (Table 3 of the paper) at ' + texp(A05, '.') + ' ' + MEANS + ' Shading as for the fitted thresholds.'
+      }
+    },
+    samples: {
+      head: tex('M'), modes: [{ key: 'samples' }],
+      cap: { samples: 'Certification of <span class="mn">PAR</span> after adaptive sampling with ' + tex('M') + ' terminal-state predictions per candidate. ' + MEANS + ' ' + SHADE }
+    },
+    limits: {
+      head: 'Limits', modes: [{ key: 'limits' }],
+      cap: { limits: 'Certification of <span class="mn">PAR</span> at error limits ' + tex('\\alpha') + ' and confidence parameters ' + texp('\\delta', '.') + ' ' + MEANS +
+        ' A dash marks an outcome predicted in no seed. An abstention of 100% means certification returned the all-abstain predictor in every seed. The mark † means the calibration set holds fewer successful states than any threshold setting needs to pass (Appendix A.4).' }
+    },
+    identical: {
+      head: 'Method', modes: [{ key: 'identical' }],
+      cap: { identical: 'Certified predictors trained on identical uniform data at the final trajectory budgets. ' + MEANS + ' ' + SHADE + ' A dash means the outcome was never predicted in any seed.' }
+    },
+    mlp: {
+      head: 'Method',
+      modes: [{ key: 'mlp_fitted', label: 'Fitted on validation data' }, { key: 'mlp_certified', label: 'Certified on calibration data' }],
+      cap: {
+        mlp_fitted: 'Comparison of <span class="mn">PAR</span> with its MLP counterparts at fitted thresholds. ' + MEANS + ' ' + SHADE,
+        mlp_certified: 'Certification of <span class="mn">PAR</span> and its MLP counterparts at ' + texp(A05, '.') + ' ' + MEANS + ' ' + SHADE
+      }
+    }
+  };
+  var PRIOR = { 'DeepReach': 1, 'Lyapunov NN': 1, 'MORALS': 1, 'Part-X GP': 1 };
+
+  function rateTable(root, name, n) {
+    var cfg = TABLES[name];
+    if (!cfg || !D.tables[cfg.modes[0].key]) return;
+    var st = { si: 0, mode: 0 }, id = 'rt' + n;
+    root.innerHTML =
+      '<div class="ex-controls">' +
+      '<div class="ctl"><span class="ctl-label" id="' + id + '-sl">Setting</span><div class="seg" role="radiogroup" aria-labelledby="' + id + '-sl" data-r="settings"></div></div>' +
+      (cfg.modes.length > 1 ? '<div class="ctl"><span class="ctl-label" id="' + id + '-ml">Thresholds</span><div class="seg" role="radiogroup" aria-labelledby="' + id + '-ml" data-r="modes"></div></div>' : '') +
+      '</div><div class="tbl-scroll"><table></table></div><p class="tbl-cap"></p>';
     root.hidden = false;
-    var st = { si: 0, mode: 'fitted' };
-    var MODES = [
-      { id: 'fitted', html: 'Fitted on validation data' },
-      { id: 'certified', html: 'Certified on calibration data' }
-    ];
-    var CAP = {
-      fitted: 'Comparison at fitted thresholds (Table 2 of the paper). Entries are mean test percentages over three seeds. For each outcome ' +
-        texp('\\ell', ',') + ' shading marks the method with the lowest ' +
-        texp('(1-w)\\,\\widehat{\\mathrm{Err}}_\\ell + w\\,(1-\\widehat{\\mathrm{Rec}}_\\ell)') + ' at ' + texp('w = 0.2', '.') +
-        ' A dash means the outcome was never predicted in any seed. DeepReach, Lyapunov NN, MORALS and Part-X are adaptations that use the same validation data and error–recall objective to tune their prediction thresholds.',
-      certified: 'Certification of adaptive predictors (Table 3 of the paper) at ' + texp('\\alpha_{\\mathrm{s}} = \\alpha_{\\mathrm{f}} = \\delta = 0.05', '.') +
-        ' Entries are mean test percentages over three seeds, with shading as for the fitted thresholds.'
-    };
-    var HEAD = [REC_S + '\\uparrow', ERR_S + '\\downarrow', REC_F + '\\uparrow', ERR_F + '\\downarrow', ABST + '\\downarrow'];
-    var PRIOR = { 'DeepReach': 1, 'Lyapunov NN': 1, 'MORALS': 1, 'Part-X GP': 1 };
     function draw() {
-      var S = D.settings[st.si], rows = D.tables[st.mode][S.id];
-      seg($('#tbl-settings'), settingItems(D.settings), st.si, function (i) { st.si = i; draw(); });
-      seg($('#tbl-modes'), MODES, st.mode === 'fitted' ? 0 : 1, function (i) { st.mode = MODES[i].id; draw(); });
-      var h = '<thead><tr><th scope="col">Method</th>' + HEAD.map(function (t) { return '<th scope="col">' + tex(t) + '</th>'; }).join('') + '</tr></thead><tbody>';
+      var S = D.settings[st.si], key = cfg.modes[st.mode].key, rows = D.tables[key][S.id];
+      seg($('[data-r="settings"]', root), D.settings.map(function (s) { return { html: esc(s.title), title: s.title + ' (' + s.dim + 'D)' }; }), st.si, function (i) { st.si = i; draw(); });
+      if (cfg.modes.length > 1) seg($('[data-r="modes"]', root), cfg.modes.map(function (m) { return { html: m.label }; }), st.mode, function (i) { st.mode = i; draw(); });
+      var h = '<thead><tr><th scope="col">' + cfg.head + '</th>' + HEAD5.map(function (t) { return '<th scope="col">' + tex(t) + '</th>'; }).join('') + '</tr></thead><tbody>';
       var prev = null;
       rows.forEach(function (r) {
-        var grp = PRIOR[r.method] ? 'prior' : /Label|BNN/.test(r.method) ? 'bnn' : 'fm';
-        h += '<tr' + (prev && grp !== prev ? ' class="sep"' : '') + '><td>' + methodName(r.method) + '</td>' + r.cells.map(function (c) {
-          return '<td class="num' + (c[1] ? ' best' : '') + '">' + esc(c[0]) + '</td>';
+        var grp = cfg.group ? (PRIOR[r.method] ? 'prior' : /Label|BNN/.test(r.method) ? 'bnn' : 'fm') : null;
+        h += '<tr' + (prev && grp !== prev ? ' class="sep"' : '') + '><th scope="row">' + (r.tex ? tex(r.tex) : methodName(r.method)) + '</th>' + r.cells.map(function (c) {
+          return '<td class="num' + (c[1] ? ' best' : '') + '">' + esc(c[0]) + (c[2] ? '<sup>†</sup>' : '') + '</td>';
         }).join('') + '</tr>';
         prev = grp;
       });
-      $('#tbl-table').innerHTML = h + '</tbody>';
-      $('#tbl-cap').innerHTML = S.title + ' (' + S.dim + 'D). ' + CAP[st.mode];
+      $('table', root).innerHTML = h + '</tbody>';
+      $('.tbl-cap', root).innerHTML = S.title + ' (' + S.dim + 'D). ' + cfg.cap[key];
     }
     draw();
+  }
+  function tables() {
+    if (!D || !D.tables) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.tbl[data-table]'), function (root, n) {
+      rateTable(root, root.getAttribute('data-table'), n);
+    });
+    /* conservative certification: one row per setting */
+    var cons = $('#cons-tbl');
+    if (cons && D.tables.conservative) {
+      var byId = {};
+      D.settings.forEach(function (S) { byId[S.id] = S; });
+      $('#cons-table').innerHTML = '<thead><tr><th scope="col">Setting</th><th scope="col">' + tex(REC_S + '\\uparrow') + '</th><th scope="col">' + tex(ERR_S + '\\downarrow') + '</th></tr></thead><tbody>' +
+        D.tables.conservative.map(function (r) {
+          var S = byId[r.setting];
+          return '<tr><th scope="row">' + esc(S.title) + ' (' + S.dim + 'D)</th><td class="num">' + esc(r.cells[0]) + '</td><td class="num">' + esc(r.cells[1]) + '</td></tr>';
+        }).join('') + '</tbody>';
+      cons.hidden = false;
+    }
+  }
+
+  /* ================================================================== objective-weight figures, one setting at a time */
+  function weightFigures() {
+    var root = $('#w-fig');
+    if (!D || !root) return;
+    var FILE = { 'pen-lqr': 'pen_lqr', 'cp-lqr': 'cp_lqr', 'cp-ppo': 'cp_ppo', 'q2d-ppo': 'q2d_ppo', 'q3d-lqr': 'q3d_lqr', 'q3d-ppo': 'q3d_ppo' };
+    var cur = 0;
+    root.hidden = false;
+    function draw() {
+      var S = D.settings[cur];
+      seg($('#w-settings'), D.settings.map(function (s) { return { html: esc(s.title), title: s.title + ' (' + s.dim + 'D)' }; }), cur, function (i) { cur = i; draw(); });
+      $('#w-img').src = 'assets/figures/w_sensitivity_' + FILE[S.id] + '.svg';
+      $('#w-cap-setting').textContent = S.title + ' (' + S.dim + 'D)';
+    }
+    draw();
+  }
+
+  /* ================================================================== contents: phone menu and current-section mark */
+  function contents() {
+    var nav = $('#toc-nav'), pop = $('#toc-pop'), menu = $('#toc-menu');
+    if (!nav) return;
+    if (pop) {
+      pop.innerHTML = nav.innerHTML;
+      pop.addEventListener('click', function (ev) { if (ev.target.closest('a')) menu.removeAttribute('open'); });
+      document.addEventListener('click', function (ev) { if (menu.hasAttribute('open') && !menu.contains(ev.target)) menu.removeAttribute('open'); });
+    }
+    var links = Array.prototype.slice.call(document.querySelectorAll('#toc-nav a, #toc-pop a'));
+    var ids = [];
+    links.forEach(function (l) { var id = l.getAttribute('href').slice(1); if (ids.indexOf(id) < 0 && document.getElementById(id)) ids.push(id); });
+    var ticking = false;
+    function mark() {
+      ticking = false;
+      var line = Math.max(96, 0.3 * window.innerHeight), current = ids[0];       /* a reading line 30% down the window */
+      for (var i = 0; i < ids.length; i++) {
+        if (document.getElementById(ids[i]).getBoundingClientRect().top <= line) current = ids[i];
+      }
+      links.forEach(function (l) {
+        var on = l.getAttribute('href') === '#' + current;
+        if (on) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
+      });
+      var act = $('#toc-nav a[aria-current="true"]'), box = $('#toc');
+      if (act && box && box.scrollHeight > box.clientHeight) {
+        var r = act.getBoundingClientRect(), b = box.getBoundingClientRect();
+        if (r.top < b.top + 8 || r.bottom > b.bottom - 8) box.scrollTop += r.top - b.top - b.height / 2;
+      }
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(mark); } }, { passive: true });
+    window.addEventListener('resize', mark);
+    mark();
   }
 
   /* ================================================================== settings (Table 1) */
@@ -490,6 +588,8 @@
 
   explorer();
   settingsTable();
-  table();
+  tables();
+  weightFigures();
+  contents();
   bib();
 })();

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PARSE Additional Experiments</title>
+<meta name="description" content="Experiments from the supplement of Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees: sampling, thresholds and certification, predictors, and uncertainty analysis.">
+<meta property="og:title" content="Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees">
+<meta property="og:description" content="PARSE predicts success, failure, or abstention for a controller's initial states, with finite-sample bounds on the errors among returned predictions.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%233E0349'/%3E%3Cpath d='M9 0h9l5 32h-9z' fill='%23CDCDCD'/%3E%3Cpath d='M0 0h11l5 32H0z' fill='%23FFE33D'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<nav class="topnav" aria-label="Site">
+  <div class="topnav-in">
+    <a class="brand" href="index.html"><span class="mn">PARSE</span></a>
+    <details class="toc-menu" id="toc-menu">
+      <summary>Contents</summary>
+      <div class="toc-pop" id="toc-pop"></div>
+    </details>
+    <div class="topnav-links">
+      <a href="index.html#explorer">Explorer</a>
+      <a href="index.html#method">Method</a>
+      <a href="index.html#results">Results</a>
+      <a href="experiments.html" aria-current="page">Additional experiments</a>
+      <a href="assets/paper.pdf">Paper PDF</a>
+      <a href="assets/supplementary.pdf">Supplement PDF</a>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+<aside class="toc" id="toc" aria-label="Contents">
+  <p class="toc-head">Contents</p>
+  <nav id="toc-nav">
+    <ol class="toc-list">
+      <li><a href="index.html" class="toc-out">Overview page</a></li>
+      <li><a href="#g-sampling">Sampling</a>
+        <ol>
+          <li><a href="#x-curves">Learning curves in all settings</a></li>
+          <li><a href="#x-fraction">Adaptive fraction</a></li>
+          <li><a href="#x-score">Acquisition score</a></li>
+          <li><a href="#x-samples">Samples per query</a></li>
+        </ol>
+      </li>
+      <li><a href="#g-thresholds">Thresholds and certification</a>
+        <ol>
+          <li><a href="#x-weight">Objective weight</a></li>
+          <li><a href="#x-limits">Error limits and confidence</a></li>
+          <li><a href="#x-conservative">Conservative certification</a></li>
+          <li><a href="#x-observed">Observed test errors above the error limit</a></li>
+        </ol>
+      </li>
+      <li><a href="#g-predictors">Predictors</a>
+        <ol>
+          <li><a href="#x-identical">Fitted and certified predictors on identical data</a></li>
+          <li><a href="#x-mlp">MLP predictors</a></li>
+          <li><a href="#x-dimension">Controller and state dimension</a></li>
+          <li><a href="#x-partx">Part-X region classifications</a></li>
+        </ol>
+      </li>
+      <li><a href="#g-uncertainty">Uncertainty and abstention</a>
+        <ol>
+          <li><a href="#x-coverage">Predictive signals and training coverage</a></li>
+          <li><a href="#x-abstention">Threshold-dependent abstention</a></li>
+        </ol>
+      </li>
+    </ol>
+  </nav>
+</aside>
+<div class="content">
+
+<header class="hero hero-sub" id="top">
+  <div class="wrap">
+    <p class="crumb"><a href="index.html">Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees</a></p>
+    <h1>Additional experiments</h1>
+    <p class="expansion">These experiments are in the supplement. Each one names its appendix section, and the text and numbers follow the supplement.</p>
+    <p class="actions">
+      <a class="btn" href="assets/supplementary.pdf">Supplementary (PDF)</a>
+      <a class="btn btn-quiet" href="assets/paper.pdf">Paper (PDF)</a>
+    </p>
+  </div>
+</header>
+
+<main>
+
+<section class="wrap group" id="g-sampling">
+      <h2>Sampling</h2>
+      <article class="exp" id="x-curves">
+        <h3>Learning curves in all settings <a class="apx" href="assets/supplementary.pdf#page=6">Appendix B.3</a></h3>
+        <div class="prose"><p>The <a href="index.html#explorer">explorer</a> steps through these curves one setting at a time. The figure shows all six settings together, as printed in the supplement.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/adaptive_learning_full.svg" alt="Six panels of learning curves, one per setting, each with recall and abstention above and prediction error below, for PARSE with solid lines and Unif-PARSE with dash-dot lines over the training trajectory budget." width="864" height="537" loading="lazy">
+          <figcaption><span class="mn">PARSE</span> and Unif-<span class="mn">PARSE</span> learning curves in all six settings. Shaded areas in the upper panels show <span class="tex" data-tex="\widehat{\mathrm{Abst}}"></span>. Recall and abstention average all three seeds; faded error markers indicate fewer contributing seeds, and gaps indicate none.</figcaption>
+        </figure>
+      </article>
+      <article class="exp" id="x-fraction">
+        <h3>Adaptive fraction <a class="apx" href="assets/supplementary.pdf#page=7">Appendix B.5</a></h3>
+        <div class="prose"><p>This experiment varies the adaptive fraction <span class="tex" data-tex="\rho \in \{0, 0.5, 0.75, 1\}"></span> of each new batch for <span class="mn">PAR</span>. The adaptive portion uses the acquisition score <span class="tex" data-tex="U"></span>, and the remainder is sampled uniformly. The initial batch and final trajectory budget are fixed within each setting, and <span class="tex" data-tex="\rho = 0"></span> gives Unif-<span class="mn">PAR</span>. All six settings are evaluated after certification with <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>. No fraction has the highest recall for both outcomes in every setting.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/adaptive_fraction_certified.svg" alt="Six panels, one per setting, of recall and prediction error against the adaptive fraction at 0, 0.5, 0.75 and 1, for success and failure predictions." width="864" height="627" loading="lazy">
+          <figcaption><span class="mn">PARSE</span> at the final budget, by adaptive fraction. Points show seed means; bands span minima and maxima where at least two seeds contribute. Faded error markers indicate fewer than three contributing seeds. Gray lines mark the 5% error limit.</figcaption>
+        </figure>
+      </article>
+      <article class="exp" id="x-score">
+        <h3>Acquisition score <a class="apx" href="assets/supplementary.pdf#page=18">Appendix F</a></h3>
+        <div class="prose"><p>At <span class="tex" data-tex="\rho = 0.75"></span>, three acquisition scores are compared for <span class="mn">PAR</span>: <span class="tex" data-tex="U"></span>, the acquisition score defined in the method; <span class="tex" data-tex="q_A"></span>, the posterior probability that the predictor abstains under the acquisition thresholds; and <span class="tex" data-tex="U_\tau"></span>, which replaces the binary entropy of outcomes among valid terminal-state predictions in <span class="tex" data-tex="U"></span> with the entropy of the posterior probabilities of predicting success, predicting failure, and abstaining. The posterior is a Dirichlet distribution over the probabilities of success, failure, and invalid terminal-state predictions, with parameters one plus the corresponding counts among the <span class="tex" data-tex="M"></span> predictions. The acquisition thresholds use one cutoff per outcome probability, fitted on validation data to minimize 0.9 times the error fraction among states with a predicted outcome plus 0.1 times the abstention fraction. These thresholds are used only to select trajectories. The figure reports the resulting predictors after certification with <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/acquisition_strategy_certified.svg" alt="Six panels of bar charts, one per setting, of recall and prediction error for the three acquisition scores U, q_A and U_tau, for success and failure predictions." width="864" height="526" loading="lazy">
+          <figcaption><span class="mn">PARSE</span> at the final budget, by acquisition score. Bars show three-seed means; whiskers span minima and maxima. Gray lines mark the 5% error limit.</figcaption>
+        </figure>
+      </article>
+      <article class="exp" id="x-samples">
+        <h3>Samples per query <a class="apx" href="assets/supplementary.pdf#page=12">Appendix B.8</a></h3>
+        <div class="prose"><p>Each query's outcome probabilities are fractions of <span class="tex" data-tex="M = 100"></span> terminal-state predictions, so they resolve steps of 0.01 and carry Monte Carlo noise. The table repeats adaptive sampling with <span class="tex" data-tex="M = 20"></span> and <span class="tex" data-tex="M = 50"></span> predictions per candidate in the acquisition score <span class="tex" data-tex="U"></span>, with the same initial batch, budget, and seeds; training, threshold selection, and evaluation are unchanged and use <span class="tex" data-tex="M = 100"></span>. The certified recalls show no consistent trend with <span class="tex" data-tex="M"></span>: each value gives the highest mean success recall in at least one setting.</p></div>
+        <div class="tbl" data-table="samples" hidden></div>
+      </article>
+</section>
+
+<section class="wrap group" id="g-thresholds">
+      <h2>Thresholds and certification</h2>
+      <article class="exp" id="x-weight">
+        <h3>Objective weight <a class="apx" href="assets/supplementary.pdf#page=8">Appendix B.6</a></h3>
+        <div class="prose"><p>The threshold fit is repeated for <span class="tex" data-tex="w \in \{0.1, 0.2, \ldots, 0.9\}"></span>, and the test recall, prediction error, and abstention are reported at each value, one setting per figure, for the five adaptive predictors: <span class="mn">PAR</span>, <span class="mn">PAR</span>-BNN, BNN-Label, and their MLP counterparts. As in the main paper, <span class="mn">PAR</span> uses fitted thresholds.</p></div>
+        <div class="figsw" id="w-fig" hidden>
+          <div class="ex-controls"><div class="ctl"><span class="ctl-label" id="w-setting-label">Setting</span><div class="seg" id="w-settings" role="radiogroup" aria-labelledby="w-setting-label"></div></div></div>
+          <figure class="plate plate-wide">
+            <img id="w-img" src="assets/figures/w_sensitivity_pen_lqr.svg" alt="Five small panels of success recall, failure recall, abstention, success prediction error and failure prediction error against the objective weight w, with one line per predictor." width="864" height="396" loading="lazy">
+            <figcaption><span id="w-cap-setting">Pendulum LQR (2D)</span>. Test recall, prediction error, and abstention at the final trajectory budget, with thresholds fitted at each <span class="tex" data-tex="w"></span>. Lines are seed means, and the band spans the seed minimum and maximum for <span class="mn">PAR</span>. The dotted line marks <span class="tex" data-tex="w = 0.2"></span>, the value used in the experiments.</figcaption>
+          </figure>
+        </div>
+        <noscript><p class="prose">The six figures, one per setting, are in Appendix B.6 of the supplement.</p></noscript>
+      </article>
+      <article class="exp" id="x-limits">
+        <h3>Error limits and confidence <a class="apx" href="assets/supplementary.pdf#page=12">Appendix B.7</a></h3>
+        <div class="prose"><p>The certification of <span class="mn">PAR</span> is repeated with <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \alpha \in \{0.05, 0.01\}"></span> and <span class="tex" data-tex="\delta \in \{0.05, 0.01\}"></span>, using the same trained predictors and calibration data.</p></div>
+        <div class="tbl" data-table="limits" hidden></div>
+      </article>
+      <article class="exp" id="x-conservative">
+        <h3>Conservative certification <a class="apx" href="assets/supplementary.pdf#page=13">Appendix C.1</a></h3>
+        <div class="prose"><p>When only successful states need to be admitted, the procedure can certify success predictions alone. The table applies conservative certification (<a href="assets/supplementary.pdf#page=1">Appendix A.2</a>) with <span class="tex" data-tex="\alpha_{\mathrm{s}} = \delta = 0.05"></span> to <span class="mn">PAR</span>. It reports success recall and test success prediction error, leaving all other states unclaimed. Its guarantee concerns success predictions only.</p></div>
+        <div class="tbl tbl-narrow" id="cons-tbl" hidden>
+          <div class="tbl-scroll"><table id="cons-table"></table></div>
+          <p class="tbl-cap">Conservative certification of <span class="mn">PAR</span>. Entries are mean test percentages over three seeds.</p>
+        </div>
+      </article>
+      <article class="exp" id="x-observed">
+        <h3>Observed test errors above the error limit <a class="apx" href="assets/supplementary.pdf#page=7">Appendix B.4</a></h3>
+        <div class="prose"><p>The bounds in Theorem 1 hold with probability at least <span class="tex" data-tex="1 - \delta"></span>, and the reported prediction errors are test measurements, so the observed prediction error of a certified predictor can exceed 5%. No final-budget run of <span class="mn">PARSE</span> or Unif-<span class="mn">PARSE</span> exceeds 5%. Four other final-budget runs do, each in success prediction error. Two are on planar quadrotor RL, one MLP-Label run at 6.04% and one <span class="mn">PARSE</span>-BNN run at 5.44%. The other two are in the acquisition-score comparison, one <span class="tex" data-tex="U_\tau"></span> run at 5.54% on planar quadrotor RL and one <span class="tex" data-tex="q_A"></span> run at 5.43% on spatial quadrotor RL. Six checkpoints in the learning curves, all before the final budget, exceed 5% in one prediction error, by at most 0.20 percentage points.</p></div>
+      </article>
+</section>
+
+<section class="wrap group" id="g-predictors">
+      <h2>Predictors</h2>
+      <article class="exp" id="x-identical">
+        <h3>Fitted and certified predictors on identical data <a class="apx" href="assets/supplementary.pdf#page=13">Appendix C.2</a></h3>
+        <div class="prose"><p>The table reports all six settings after certification, for predictors trained on identical uniform data. The figure extends Figure 3 of the paper to all six settings and adds the MLP predictors, using the same training trajectories and test states. The validation-fitted thresholds minimize the fitting objective at <span class="tex" data-tex="w = 0.2"></span> and impose no 5% error limit, so their test errors can exceed the limit. The validation-fitted test success prediction error exceeds 5% in 36 of the 90 runs. The faint line joining each predictor's two points shows how certification changes its recall and prediction error.</p></div>
+        <div class="tbl" data-table="identical" hidden></div>
+        <div class="prose"><p>The full comparison includes Unif-MLP-Label and Unif-<span class="mn">PAR</span>-MLP. After certification, both binary-outcome predictors have higher mean recall for both outcomes than Unif-<span class="mn">PARSE</span> on cartpole RL, with 62.90% success recall compared with 55.62%. On the pendulum, both binary-outcome predictors have slightly higher success recall, while Unif-<span class="mn">PARSE</span> has the highest failure recall. The higher recall of Unif-<span class="mn">PARSE</span> in the table does not extend to the other terminal-state predictors: Unif-<span class="mn">PARSE</span>-MLP and Unif-<span class="mn">PARSE</span>-BNN abstain everywhere in two of the three cartpole RL seeds, and Unif-<span class="mn">PARSE</span>-MLP in all three spatial quadrotor RL seeds.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/predictor_comparison_uniform.svg" alt="Twelve scatter panels, two per setting, of recall against prediction error for success and failure predictions, for five predictors trained on uniform data, each at validation-fitted and certified thresholds with a faint line joining the two points." width="864" height="906" loading="lazy">
+          <figcaption>Fitted and certified predictors at the final trajectory budgets. Points show seed means with min–max bars.</figcaption>
+        </figure>
+      </article>
+      <article class="exp" id="x-mlp">
+        <h3>MLP predictors <a class="apx" href="assets/supplementary.pdf#page=17">Appendix E</a></h3>
+        <div class="prose"><p><span class="mn">PAR</span> is compared with MLP-Label and <span class="mn">PAR</span>-MLP. <span class="mn">PAR</span>-MLP predicts Gaussian mixtures over terminal states, and MLP-Label learns success probabilities from binary outcomes. They are the counterparts of <span class="mn">PAR</span>-BNN and BNN-Label without a weight posterior. All three use the same trajectory budget within each setting. Each predictor selects its own trajectories, so these comparisons include predictor-dependent acquisition.</p></div>
+        <div class="tbl" data-table="mlp" hidden></div>
+        <div class="prose"><p>Under certification with <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>, on spatial quadrotor RL, MLP-Label retains 32.63% success recall and 71.55% failure recall, and <span class="mn">PARSE</span>-MLP abstains on 91.75% of test states. <span class="mn">PARSE</span> retains 57.60% and 76.48% recall there and abstains on 24.42%.</p></div>
+      </article>
+      <article class="exp" id="x-dimension">
+        <h3>Controller and state dimension <a class="apx" href="assets/supplementary.pdf#page=12">Appendix B.9</a></h3>
+        <div class="prose"><p>Within the cartpole (4D), <span class="mn">PARSE</span> has lower recall under RL at the same 2,000-trajectory budget. On the spatial quadrotor (12D), it abstains more under RL than LQR despite the larger RL budget. Thus, dimension alone does not explain estimation difficulty. The harder RL cases may reflect greater sensitivity of the dynamics to initial conditions, associated with higher Lipschitz constants and a need for finer data coverage to resolve outcomes.</p></div>
+      </article>
+      <article class="exp" id="x-partx">
+        <h3>Part-X region classifications <a class="apx" href="assets/supplementary.pdf#page=6">Appendix B.2</a></h3>
+        <div class="prose"><p>Part-X also returns region classifications of its own, which the comparison tables do not use. It classifies leaf boxes of its partition as satisfying or violating at level 0.05, leaves the other boxes unresolved, and bounds the misclassified volume under model and regularity assumptions. At the final budget, none of the 18 Part-X runs contains a leaf classified as satisfying, so these classifications predict success for no test state. Leaves classified as violating appear in 13 runs, with none on the pendulum and one of three seeds on cartpole LQR.</p><p>Among the test states inside them, the fraction that succeed, <span class="tex" data-tex="\widehat{\mathrm{Err}}_{\mathrm{f}}"></span>, is at most 0.015 on both cartpole settings and 0.016 on planar quadrotor RL. It lies between 0.041 and 0.048 on spatial quadrotor RL, and between 0.197 and 0.222 on spatial quadrotor LQR, where these leaves contain 89% of the successful test states on average. The volume bound can be evaluated for one of the 36 combinations of run and leaf type, the violating leaves of one cartpole LQR seed. There it states that, with probability at least 0.0009, the misclassified volume is at most 0.17 of the state-space box. In the other 35 cases, no leaf of that type exists or a leaf's probability term is numerically zero. The implementation does not check the assumptions behind the bound.</p></div>
+      </article>
+</section>
+
+<section class="wrap group" id="g-uncertainty">
+      <h2>Uncertainty and abstention</h2>
+      <div class="prose"><p>Invalid mass and weighted disagreement guide acquisition before thresholding, while returned abstentions also depend on the four decision thresholds. This analysis extends the pendulum figure of the paper.</p></div>
+      <article class="exp" id="x-coverage">
+        <h3>Predictive signals and training coverage <a class="apx" href="assets/supplementary.pdf#page=15">Appendix D.1</a></h3>
+        <div class="prose"><p>Training coverage is measured by the distance to the nearest state visited by a training trajectory. The distance to the nearest test state with the opposite ground-truth outcome bounds the distance to the success–failure boundary from above and serves as a proxy for it. Both are Euclidean distances in normalized coordinates <span class="tex" data-tex="(\theta/2\pi,\ \dot{\theta}/4\pi)"></span>, using wrapped angular differences. A state has sparse training coverage when its training distance exceeds 0.02, and dense training coverage otherwise. It is near the boundary when its opposite-outcome distance is below 0.01, about 1.5 angular grid cells.</p><p>The figure bins 20,702 test states by these distances across the three <span class="mn">PAR</span> seeds at round 2, each trained on 120 trajectories. Mean invalid mass rises from 0.31 in the closest distance bin to about 0.50 by distance 0.03, then varies little. Invalid mass is therefore associated with reduced training coverage, but is also substantial near training states. Mean weighted disagreement is about 0.16 at opposite-outcome distances up to 0.01 and approaches zero by distance 0.1. Near the boundary, mean weighted disagreement is 0.12 to 0.32 per seed with dense training coverage but 0.01 to 0.03 with sparse coverage, and 93 to 100% of states with weighted disagreement of at least 0.3 have dense coverage. These observations describe associations in the pendulum benchmark, not distinct causes of uncertainty.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/pendulum_signals_vs_distance.svg" alt="Two line charts. Left: mean invalid mass against distance to the nearest training state, rising from about 0.31 to about 0.5. Right: mean weighted disagreement against distance to the nearest opposite-outcome test state, falling from about 0.16 to zero." width="864" height="288" loading="lazy">
+          <figcaption>Pendulum predictive signals versus distance. Lines average the three per-seed bin means; bands span their minimum and maximum. Dashed lines mark the cutoffs for sparse training coverage and proximity to the boundary.</figcaption>
+        </figure>
+        <div class="prose"><p>The next batch for seed 99512 at round 2 links these signals to trajectory collection. It contains 27 initial states selected using <span class="tex" data-tex="U"></span> and eight drawn uniformly. The 27 acquired states are selected from 159 candidates with <span class="tex" data-tex="U \ge 0.999"></span>, using farthest-point tie-breaking against prior and newly selected initial states in the model's input coordinates. The signal maps use separate Monte Carlo draws from those used for acquisition. Of the 27 selected states, seven yield only invalid terminal-state predictions, and nine yield valid terminal-state predictions split evenly between the success and failure sets. Thus both invalid mass and disagreement contribute to the selected batch, although this observation does not isolate their effects on subsequent prediction performance.</p></div>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/pendulum_coverage_acquisition_1x5.svg" alt="Five maps of the pendulum state space at one checkpoint: abstention, distance to training states, invalid mass, weighted disagreement, and the acquisition score with the next selected initial states." width="864" height="229" loading="lazy">
+          <figcaption>Extended view of Figure 4 of the paper, adding abstention at the same pendulum checkpoint.</figcaption>
+        </figure>
+      </article>
+      <article class="exp" id="x-abstention">
+        <h3>Threshold-dependent abstention <a class="apx" href="assets/supplementary.pdf#page=16">Appendix D.2</a></h3>
+        <div class="prose"><p>The abstentions depend on the decision thresholds as well as the predictive signals. The figure shows the decision regions under each of the four possible orderings of the thresholds. Three kinds of abstention are distinguished.</p></div>
+        <ul class="defs">
+          <li><strong>Invalid.</strong> <span class="tex" data-tex="\hat{p}_{\mathrm{s}}(x) \le \tau^{\mathrm{s}}_{\mathrm{s}}"></span> and <span class="tex" data-tex="\hat{p}_{\mathrm{f}}(x) \le \tau^{\mathrm{f}}_{\mathrm{f}}"></span>. Neither estimated outcome probability exceeds its threshold.</li>
+          <li><strong>Outcome-uncertain.</strong> <span class="tex" data-tex="\hat{p}_{\mathrm{s}}(x) > \tau^{\mathrm{f}}_{\mathrm{s}}"></span> and <span class="tex" data-tex="\hat{p}_{\mathrm{f}}(x) > \tau^{\mathrm{s}}_{\mathrm{f}}"></span>. Each estimated outcome probability is high enough to keep the state out of the other outcome's candidate set.</li>
+          <li><strong>Weak.</strong> All remaining abstentions, satisfying neither the invalid nor the outcome-uncertain definition.</li>
+        </ul>
+        <figure class="plate plate-wide">
+          <img src="assets/figures/abstention_triangle.svg" alt="Four triangular diagrams over the estimated success and failure probabilities, one per ordering of the thresholds, with regions coloured as success, failure, and abstention." width="863" height="262" loading="lazy">
+          <figcaption>Decision regions over <span class="tex" data-tex="(\hat{p}_{\mathrm{s}}, \hat{p}_{\mathrm{f}})"></span> for the four possible orderings of the thresholds, one per panel, with illustrative threshold values. The candidate success and failure sets overlap only in (a).</figcaption>
+        </figure>
+        <div class="prose"><p>Under the threshold ordering in panel (a), the three groups partition the abstentions. This ordering holds in five of the eleven certified predictors. States satisfying both the invalid and the outcome-uncertain definitions contribute to both groups' statistics. These categories describe the thresholded decisions, not separate causes of uncertainty.</p><p>The following summaries average per-seed statistics from Unif-<span class="mn">PARSE</span> and <span class="mn">PARSE</span>, with three seeds each, at rounds 2 and 10 where certification returns predictions. At round 2, uniform seed 24475 returns an all-abstain predictor, leaving two contributing seeds for uniform sampling.</p><p>In all included rounds, <span class="tex" data-tex="\tau^{\mathrm{s}}_{\mathrm{s}} + \tau^{\mathrm{f}}_{\mathrm{f}} \le 0.61"></span>, so invalid abstentions have <span class="tex" data-tex="\hat{p}_{\mathrm{inv}} \ge 0.39"></span>. These abstentions are disproportionately found in regions with sparse training coverage. At round 10, 28% of adaptive and 72% of uniform invalid abstentions lie in such regions, compared with 9% of all test states. Invalid abstention is therefore associated with limited local training coverage in this benchmark, but is not a complete detector of missing data.</p><p>Weak and outcome-uncertain abstentions concentrate near the boundary. At round 10, 47% of adaptive and 48% of uniform weak abstentions are near it, compared with 3% of all test states. The corresponding proportions for outcome-uncertain abstentions are 92% and 70%. These categories still carry invalid mass: its mean is 0.56 and 0.82 for weak abstentions, and 0.24 and 0.51 for outcome-uncertain abstentions, under adaptive and uniform sampling respectively.</p><p>Invalid abstentions occupy less of the test grid as training progresses. Their share falls from 5.3% at round 2 to 0.4% at round 10 with adaptive sampling, and from 9.5% to 1.1% with uniform sampling. These measurements describe aggregate changes in the decision regions as both the model and thresholds change. They do not establish a sequence of categories through which individual states pass.</p></div>
+      </article>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Rutgers University</p>
+  </div>
+</footer>
+</div>
+</div>
+
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/explorer/data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

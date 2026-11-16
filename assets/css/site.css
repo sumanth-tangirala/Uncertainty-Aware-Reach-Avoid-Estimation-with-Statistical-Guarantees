@@ -1,4 +1,5 @@
-/* Layout: one reading column for prose, a wider column for the explorer and tables.
+/* Layout: a contents rail on wide screens, then one reading column for prose and a wider one for the explorer,
+   figures and tables. Sections follow the paper, then the supplement's experiments by topic.
    Colour means data only. The page itself is ink on a cool near-white (or the reverse); the paper's map
    fills and line colours are the only hues, so nothing in the interface can be mistaken for an outcome. */
 :root {
@@ -73,7 +74,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 3.5rem; }
+html { scroll-behavior: smooth; scroll-padding-top: 3.75rem; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   margin: 0;
@@ -117,11 +118,55 @@ sup { line-height: 0; }
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--rule);
 }
-.topnav-in { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: var(--nav-h); }
+.topnav-in {
+  display: flex; align-items: center; gap: 1rem; min-height: var(--nav-h);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
 .brand { color: var(--ink); text-decoration: none; font-size: 1.05rem; }
-.topnav-links { display: flex; gap: 0.25rem 1.1rem; flex-wrap: wrap; justify-content: flex-end; font-size: 0.92rem; }
+.topnav-links { display: flex; gap: 0.25rem 1.1rem; flex-wrap: wrap; justify-content: flex-end; font-size: 0.92rem; margin-left: auto; }
 .topnav-links a { color: var(--muted); text-decoration: none; padding-block: 0.3rem; }
 .topnav-links a:hover { color: var(--ink); }
+
+/* ---------------------------------------------------------------- contents */
+.layout { display: block; }
+.content { min-width: 0; }
+.toc { display: none; }
+.toc-head { font-size: 0.75rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 0.5rem; }
+.toc-list, .toc-list ol { list-style: none; margin: 0; padding: 0; }
+.toc-list > li { margin-bottom: 0.1rem; }
+.toc-list ol { margin: 0.1rem 0 0.5rem 0.65rem; border-left: 1px solid var(--rule); }
+.toc-list a {
+  display: block; padding: 0.22rem 0.5rem; color: var(--muted); text-decoration: none; line-height: 1.3;
+  border-left: 2px solid transparent; margin-left: -1px;
+}
+.toc-list > li > a { color: var(--ink); font-weight: 500; }
+.toc-list a:hover { color: var(--ink); }
+.toc-list a[aria-current="true"] { color: var(--ink); font-weight: 600; border-left-color: var(--ink); background: var(--band); }
+.toc-list a.toc-out { color: var(--muted); font-weight: 400; }
+.toc-list a.toc-out::after { content: " \2192"; }
+.topnav-links a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.toc-menu { position: relative; font-size: 0.92rem; }
+.toc-menu summary {
+  list-style: none; cursor: pointer; border: 1px solid var(--rule-strong); border-radius: 6px; padding: 0.3rem 0.65rem;
+  color: var(--ink); font-weight: 500; user-select: none;
+}
+.toc-menu summary::-webkit-details-marker { display: none; }
+.toc-menu[open] summary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.toc-pop {
+  position: absolute; left: 0; top: calc(100% + 0.4rem); z-index: 30; width: min(21rem, calc(100vw - 2rem));
+  max-height: calc(100vh - var(--nav-h) - 1.5rem); overflow-y: auto; font-size: 0.9rem;
+  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 8px; padding: 0.6rem 0.5rem;
+  box-shadow: 0 10px 28px -12px rgba(20, 16, 40, 0.55);
+}
+@media (min-width: 80rem) {
+  .layout { display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); }
+  .toc {
+    display: block; position: sticky; top: var(--nav-h); align-self: start;
+    height: calc(100vh - var(--nav-h)); overflow-y: auto; font-size: 0.86rem;
+    padding: 1.25rem 0.75rem 2rem 1.1rem; border-right: 1px solid var(--rule);
+  }
+  .toc-menu { display: none; }
+}
 
 .hero { padding-block: 2.75rem 1.25rem; }
 .expansion { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.25rem; max-width: 60ch; }
@@ -183,7 +228,7 @@ sup { line-height: 0; }
 
 /* ---------------------------------------------------------------- maps */
 .ex-maps {
-  display: grid; grid-template-columns: minmax(10.5rem, 13rem) repeat(2, minmax(0, 1fr));
+  display: grid; grid-template-columns: 10.5rem repeat(2, minmax(0, 1fr));
   gap: 1.25rem; align-items: start; margin-top: 1.1rem;
 }
 figure { margin: 0; }
@@ -270,26 +315,57 @@ canvas { display: block; image-rendering: pixelated; }
 
 .theorem { border: 1px solid var(--rule-strong); border-left: 4px solid var(--ink); background: var(--surface); border-radius: 6px; padding: 1rem 1.25rem 0.6rem; margin: 0.5rem 0 1.25rem; max-width: 52rem; }
 .theorem-head { font-weight: 600; margin-bottom: 0.3rem; }
-.theorem-math { overflow-x: auto; overflow-y: hidden; padding-block: 0.3rem; text-align: center; }
+.theorem-math { position: relative; overflow-x: auto; overflow-y: hidden; padding-block: 0.3rem; text-align: center; }
 
-.tbl-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; max-width: 46rem; }
+/* position: relative keeps the math's hidden accessibility boxes inside the scroll area */
+.tbl-scroll { position: relative; overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; max-width: 46rem; }
 table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
 th, td { padding: 0.5rem 0.8rem; text-align: right; white-space: nowrap; }
 th:first-child, td:first-child { text-align: left; }
 thead th { font-weight: 600; border-bottom: 1px solid var(--rule-strong); font-size: 0.9rem; }
-tbody td { font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--rule); }
-tbody tr:last-child td { border-bottom: 0; }
-tbody tr.sep td { border-top: 2px solid var(--rule-strong); }
+tbody td, tbody th { font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--rule); }
+tbody th { font-weight: 400; }
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+tbody tr.sep td, tbody tr.sep th { border-top: 2px solid var(--rule-strong); }
+td sup { font-size: 0.7em; }
+.tbl-narrow .tbl-scroll { max-width: 26rem; }
 td.best { background: color-mix(in srgb, var(--c-success) 22%, transparent); }
 .tbl-cap { font-size: 0.9rem; color: var(--muted); margin: 0.6rem 0 0; max-width: 86ch; }
 .findings { margin-top: 1.5rem; }
+
+/* ---------------------------------------------------------------- sections inside Results and Additional experiments */
+.sub { margin-top: 2rem; min-width: 0; }
+.sub > h3 { font: 600 1.25rem/1.3 var(--sans); margin: 0 0 0.6rem; }
+/* the experiments page: each group is a section, each experiment a block under a hairline */
+.group { padding-block: 1.75rem 0.75rem; }
+.group > h2 { margin-bottom: 0.4rem; }
+.exp { padding-block: 1.5rem 0.5rem; border-top: 1px solid var(--rule); }
+.group > h2 + .exp { border-top: 0; padding-top: 0.75rem; }
+.exp h3 { font: 600 1.15rem/1.35 var(--sans); margin: 0 0 0.6rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem; }
+.apx { font: 500 0.74rem/1 var(--sans); color: var(--muted); border: 1px solid var(--rule-strong); border-radius: 999px; padding: 0.24rem 0.55rem; white-space: nowrap; text-decoration: none; }
+a.apx:hover { color: var(--ink); border-color: var(--ink); }
+.hero-sub { padding-block: 2rem 0.5rem; }
+.crumb { font-size: 0.92rem; margin: 0 0 0.5rem; }
+.crumb a { color: var(--muted); }
+.more-card { border-top: 1px solid var(--rule); padding-top: 1.75rem; }
+.more-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+.more-list li { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 0.8rem 1rem; min-width: 0; }
+.more-list a { display: block; font-weight: 600; margin-bottom: 0.2rem; }
+.more-list span { font-size: 0.92rem; color: var(--muted); }
+.exp .plate-wide { margin-block: 1rem 1.25rem; }
+.exp .tbl { margin-block: 1rem 1.25rem; }
+.exp .prose p { max-width: 76ch; }
+.figsw { margin-top: 1rem; }
+.figsw .plate-wide { margin-top: 0.25rem; }
+.defs { margin: 0 0 1rem; padding-left: 1.2rem; max-width: 76ch; }
+.defs li { margin-bottom: 0.45rem; }
 .bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); gap: 1.25rem; align-items: start; margin-bottom: 1.75rem; }
 .settings-tbl { max-width: 33rem; }
 .systems-row { display: grid; grid-template-columns: 0.55fr 0.7fr 1.5fr 1.5fr; gap: 0.75rem; align-items: end; }
 .sys { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; min-width: 0; font-size: 0.82rem; color: var(--plate-muted); text-align: center; }
 .sys img { max-height: 6.5rem; width: auto; max-width: 100%; }
 .settings-tbl td, .settings-tbl th { padding: 0.38rem 0.6rem; font-size: 0.88rem; }
-.figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 1.25rem; align-items: start; }
+.figs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; align-items: start; }
 .figs img { width: min(100%, 21rem); }
 
 .bib { position: relative; max-width: 54rem; }
@@ -310,10 +386,11 @@ pre { background: var(--surface); border: 1px solid var(--rule); border-radius: 
 @media (max-width: 46rem) {
   body { font-size: 1rem; }
   h1 br { display: none; }
-  .split, .steps, .figs, .bench { grid-template-columns: minmax(0, 1fr); }
+  .split, .steps, .figs, .bench, .more-list { grid-template-columns: minmax(0, 1fr); }
   .systems-row { grid-template-columns: 0.6fr 0.8fr; }
   .systems-row .wide { grid-column: 1 / -1; }
   .ex-maps { grid-template-columns: minmax(0, 1fr); }
+  .tex { white-space: normal; }            /* long formulas may break at operators on a phone */
   .map figcaption {
     position: sticky; top: calc(var(--nav-h) + 0.4rem + var(--budget-h)); z-index: 5;
     background: var(--band); margin: 0; padding: 0.35rem 0 0.3rem;
@@ -326,6 +403,8 @@ pre { background: var(--surface); border: 1px solid var(--rule); border-radius: 
   .budget-unit { font-size: 0.92rem; }
   .budget-round { display: none; }
   .budget-ticks span:not(:first-child):not(:last-child) { display: none; }
-  .topnav-links { gap: 0.1rem 0.8rem; font-size: 0.85rem; }
+  .topnav-links { display: none; }
+  .toc-menu { margin-left: auto; }
+  .toc-pop { left: auto; right: 0; }
   th, td { padding: 0.45rem 0.55rem; }
 }
