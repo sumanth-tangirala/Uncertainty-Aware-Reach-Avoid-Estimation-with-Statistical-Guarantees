@@ -2,77 +2,269 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PARSE: Uncertainty-Aware Reach-Avoid Estimation</title>
-<meta name="description" content="Reach-avoid estimation with abstention and finite-sample statistical guarantees, using conditional flow matching.">
-<style>
-:root{--bg:#fff;--fg:#1a1d23;--mut:#5b6472;--acc:#2f5bd8;--card:#f4f6fa;--bd:#e1e5ec}
-@media (prefers-color-scheme:dark){:root{--bg:#11141a;--fg:#e8ebf0;--mut:#9aa4b2;--acc:#7da2ff;--card:#1b1f27;--bd:#2b313c}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-main{max-width:800px;margin:0 auto;padding:48px 16px 64px}
-h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.2;margin:0 0 8px}
-h2{margin:44px 0 10px;font-size:1.4rem}
-.sub{color:var(--mut);margin:0 0 24px}
-.authors{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 4px}
-.authors span{white-space:nowrap}
-.aff{color:var(--mut);margin:0 0 4px}
-.venue{color:var(--mut);font-size:.95rem}
-.btns{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
-.btns a{padding:9px 18px;border-radius:8px;background:var(--acc);color:#fff;text-decoration:none;font-weight:600}
-.btns a.alt{background:none;color:var(--acc);border:1px solid var(--acc)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 20px}
-ul{padding-left:1.2em}
-li{margin:6px 0}
-pre{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;overflow-x:auto;font-size:.85rem;line-height:1.5}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.steps .card{padding:14px 16px}
-.steps b{display:block;margin-bottom:4px}
-footer{color:var(--mut);font-size:.9rem;margin-top:48px}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PARSE Reach-Avoid Estimation</title>
+<meta name="description" content="Reach-avoid estimation with abstention and finite-sample statistical guarantees, using conditional flow matching. Paper, supplement, and an interactive view of certified predictions as training data grows.">
+<meta property="og:title" content="Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees">
+<meta property="og:description" content="PARSE predicts success, failure, or abstention for a controller's initial states, with finite-sample bounds on the errors among returned predictions.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%233E0349'/%3E%3Cpath d='M9 0h9l5 32h-9z' fill='%23CDCDCD'/%3E%3Cpath d='M0 0h11l5 32H0z' fill='%23FFE33D'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
+
+<nav class="topnav" aria-label="Sections">
+  <div class="wrap topnav-in">
+    <a class="brand" href="#top"><span class="mn">PARSE</span></a>
+    <div class="topnav-links">
+      <a href="#explorer">Explorer</a>
+      <a href="#method">Method</a>
+      <a href="#guarantee">Guarantee</a>
+      <a href="#results">Results</a>
+      <a href="#cite">Cite</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1><span class="nb">Uncertainty-Aware</span> <span class="nb">Reach-Avoid</span> Estimation<br> with Statistical Guarantees</h1>
+    <p class="expansion"><span class="mn">PARSE</span>: Prediction with Abstention for Reach-avoid under Statistical Error control</p>
+    <p class="authors">
+      <span>Sumanth Tangirala<sup>*</sup></span>
+      <span>Dhruv Metha Ramesh<sup>*</sup></span>
+      <span>Ewerton R. Vieira</span>
+      <span>Abdeslam Boularias</span>
+      <span>Ying Hung</span>
+      <span>Kostas E. Bekris</span>
+    </p>
+    <p class="affil">Rutgers University &nbsp;·&nbsp; <sup>*</sup>equal contribution</p>
+    <p class="venue">L4DC 2027 (PMLR, under submission)</p>
+    <p class="actions">
+      <a class="btn" href="assets/paper.pdf">Paper (PDF)</a>
+      <a class="btn btn-quiet" href="assets/supplementary.pdf">Supplementary (PDF)</a>
+    </p>
+  </div>
+</header>
+
 <main>
-<h1>Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees</h1>
-<p class="sub">PARSE: Prediction with Abstention for Reach-avoid under Statistical Error control</p>
-<p class="authors"><span>Sumanth Tangirala*</span><span>Dhruv Metha Ramesh*</span><span>Ewerton R. Vieira</span><span>Abdeslam Boularias</span><span>Ying Hung</span><span>Kostas E. Bekris</span></p>
-<p class="aff">Rutgers University &nbsp;·&nbsp; *equal contribution</p>
-<p class="venue">L4DC 2027 (PMLR, under submission)</p>
-<div class="btns">
-<a href="assets/paper.pdf">Paper (PDF)</a>
-<a class="alt" href="assets/supplementary.pdf">Supplementary (PDF)</a>
-<a class="alt" href="https://github.com/sumanth-tangirala/Uncertainty-Aware-Reach-Avoid-Estimation-with-Statistical-Guarantees">GitHub</a>
-</div>
 
-<h2>Abstract</h2>
-<p>Reach-avoid estimation predicts whether a controller reaches its goal before failure from a given initial state. Limited trajectory data leaves predictions uncertain even under deterministic dynamics. Allowing abstention can limit errors, but the predictor should still correctly identify as many outcomes as possible.</p>
-<p>PARSE uses conditional flow matching to express uncertainty about the terminal state of each initial state through a predictive distribution. Predicted terminal states satisfying neither success nor failure conditions expose model error, while valid samples can disagree on the outcome. These signals guide additional trajectory sampling; thresholds on outcome probabilities determine whether to return success, failure, or abstention. Independent calibration provides simultaneous finite-sample bounds, at prescribed confidence, on the error rates among success and failure predictions for new queries.</p>
-<p>At matched trajectory budgets, adaptive sampling improves mean recall for both outcomes after certification relative to uniform sampling in all six settings with linear-quadratic and reinforcement-learning controllers.</p>
+<section class="wrap prose" id="abstract">
+  <h2>Abstract</h2>
+  <p>Reach-avoid estimation predicts whether a controller reaches its goal before failure from a given initial state. Limited trajectory data leaves predictions uncertain even under deterministic dynamics. Allowing abstention can limit errors, but the predictor should still correctly identify as many outcomes as possible. Terminal-state predictions can inform abstention through checks against known termination conditions. <span class="mn">PARSE</span> (Prediction with Abstention for Reach-avoid under Statistical Error control) uses conditional flow matching to express uncertainty about the terminal state of each initial state through a predictive distribution. Predicted terminal states satisfying neither success nor failure conditions expose model error, while valid samples can disagree on the outcome. These signals guide additional trajectory sampling; thresholds on outcome probabilities determine whether to return success, failure, or abstention. Independent calibration provides simultaneous finite-sample bounds, at prescribed confidence, on the error rates among success and failure predictions for new queries under the same sampling and prediction protocol. At matched trajectory budgets, adaptive sampling improves mean recall for both outcomes after certification relative to uniform sampling in all six settings with linear-quadratic and reinforcement-learning controllers.</p>
+  <p class="naming"><strong>Names.</strong> <span class="mn">PAR</span> (Prediction with Abstention for Reach-avoid) is the predictor with thresholds fitted on validation data. <span class="mn">PARSE</span> (<span class="mn">PAR</span> under Statistical Error control) is <span class="mn">PAR</span> with certified thresholds. The prefix Unif- denotes uniform sampling of training trajectories.</p>
+</section>
 
-<h2>Method</h2>
-<div class="steps">
-<div class="card"><b>1. Generative terminal states</b>Conditional flow matching learns a distribution over the terminal state of each initial state.</div>
-<div class="card"><b>2. Uncertainty signals</b>Samples that meet neither the goal nor failure condition give <em>invalid mass</em>; valid samples may <em>disagree</em> on the outcome.</div>
-<div class="card"><b>3. Adaptive sampling</b>Both signals pick initial states where extra trajectories help most.</div>
-<div class="card"><b>4. Certified abstention</b>Fixed-sequence testing on calibration data picks thresholds with finite-sample error bounds on returned predictions.</div>
-</div>
+<section class="band" id="explorer">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Predictions as training data grows</h2>
+      <p>Adaptive and uniform sampling start from the same initial batch of trajectories and add the same number in each of ten rounds. The slider steps through the training budgets and shows the certified predictions of <span class="mn">PARSE</span> (adaptive sampling) and Unif-<span class="mn">PARSE</span> (uniform sampling) at each one, for all six settings and all three seeds.</p>
+    </div>
 
-<h2>Contributions</h2>
-<ul>
-<li>A generative terminal-state approach to reach-avoid estimation with explicit abstention.</li>
-<li>Adaptive trajectory sampling using invalid mass and disagreement among valid predictions.</li>
-<li>A proof of simultaneous finite-sample error bounds using fixed-sequence testing.</li>
-<li>An empirical study of predictor choice, adaptive sampling, and uncertainty signals across six LQR and RL settings.</li>
-</ul>
+    <div class="ex" id="ex" hidden>
+      <p class="preview-note" id="ex-preview" hidden>Preview build: only some seeds and settings have maps. Do not publish.</p>
+      <div class="ex-controls">
+        <div class="ctl">
+          <span class="ctl-label" id="ex-setting-label">Setting</span>
+          <div class="seg" id="ex-settings" role="radiogroup" aria-labelledby="ex-setting-label"></div>
+        </div>
+        <div class="ctl">
+          <span class="ctl-label" id="ex-seed-label">Seed</span>
+          <div class="seg" id="ex-seeds" role="radiogroup" aria-labelledby="ex-seed-label"></div>
+        </div>
+        <div class="ctl" id="ex-plane-ctl">
+          <span class="ctl-label" id="ex-plane-label">Slice</span>
+          <div class="seg" id="ex-planes" role="radiogroup" aria-labelledby="ex-plane-label"></div>
+        </div>
+        <label class="check" id="ex-starts-ctl"><input type="checkbox" id="ex-starts"> <span>Show initial states of training trajectories</span></label>
+      </div>
 
-<h2>BibTeX</h2>
-<pre>@inproceedings{tangirala2027parse,
-  title     = {Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees},
-  author    = {Tangirala, Sumanth and Ramesh, Dhruv Metha and Vieira, Ewerton R. and Boularias, Abdeslam and Hung, Ying and Bekris, Kostas E.},
-  booktitle = {Proceedings of Machine Learning Research},
-  year      = {2027}
+      <div class="ex-budget">
+        <button type="button" class="play" id="ex-play" aria-label="Play through the rounds"><span class="play-icon" aria-hidden="true"></span><span class="play-text">Play</span></button>
+        <div class="budget-main">
+          <div class="budget-read"><span class="budget-n" id="ex-n">–</span> <span class="budget-unit">training trajectories</span> <span class="budget-round" id="ex-round"></span></div>
+          <input type="range" id="ex-slider" min="0" max="10" step="1" value="10" aria-label="Training budget (acquisition round)">
+          <div class="budget-ticks" id="ex-ticks" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="ex-maps">
+        <figure class="gt">
+          <figcaption>Ground truth</figcaption>
+          <div class="gt-frame"><canvas id="ex-gt" aria-label="Ground-truth outcomes"></canvas><svg class="overlay" id="ex-gt-ov" aria-hidden="true"></svg></div>
+          <p class="gt-axes" id="ex-axes"></p>
+          <ul class="legend onplate" id="ex-legend"></ul>
+        </figure>
+        <figure class="map" id="ex-map-adaptive"></figure>
+        <figure class="map" id="ex-map-uniform"></figure>
+      </div>
+      <p class="budget-note" id="ex-budget-note"></p>
+
+      <div class="ex-charts-head">
+        <h3>Test-set rates over the training budget</h3>
+        <ul class="legend legend-lines" id="ex-chart-legend"></ul>
+      </div>
+      <div class="ex-charts" id="ex-charts"></div>
+
+      <div class="ex-note prose">
+        <p><strong>What is shown.</strong> For the pendulum, the maps cover every state of the 158 × 315 lattice that spans its state space. For the other settings they show a two-dimensional slice with the remaining coordinates held fixed, limited to the range from which initial states are sampled. In every map, the pendulum's included, each cell is classified from <span class="tex" data-tex="M = 100"></span> terminal-state samples drawn with that round's model and that round's certified thresholds (<span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>). The certificate bounds error rates over new queries drawn from the same distribution as the calibration queries, not the error at any single state, and a slice with fixed coordinates is not such a draw. The cells are not the test queries and use fresh terminal-state samples.</p>
+        <p>The numbers under the maps are the selected seed's rates on the test set. The curves repeat the certified learning curves of the paper (Figure 5 and Appendix B.3) with the three-seed mean, the min–max range, and the selected seed. Prediction errors average only the seeds that predicted the outcome. Before the first acquisition round the two arms have the same training data, and one model is shown for both, as in the paper's curves. When no threshold setting passes the calibration test, the predictor abstains everywhere.</p>
+      </div>
+    </div>
+    <noscript><p class="prose">The interactive view needs JavaScript. The same results are in Figure 5 of the paper and Appendix B.3 of the supplement.</p></noscript>
+  </div>
+</section>
+
+<section class="wrap" id="idea">
+  <div class="split">
+    <div class="prose">
+      <h2>Why abstain</h2>
+      <p>Without analytical descriptions, only trajectory rollouts provide evidence of success and failure. An outcome predictor must generalize beyond sparse observed trajectories, which induce uncertainty. Near the boundary between successful and failing initial states, small deviations can change outcomes, so finer local data may be needed even with dense trajectory data.</p>
+      <p>Allowing for abstention avoids forcing a success or failure prediction. Within a fixed data budget, the objective is to maximize correct predictions while limiting errors among returned predictions.</p>
+      <p>The available trajectories offer more than binary outcomes. They reveal terminal states. When trajectories terminate on reaching a goal or violating state bounds, predictions outside the goal but within all bounds cannot be terminal, so terminal-state predictions can expose some model errors without the queried initial state's ground-truth outcome.</p>
+    </div>
+    <figure class="plate plate-narrow">
+      <img src="assets/figures/uncertainty_sources_2x2.svg" alt="Two rows of schematic panels. With few trajectories, large regions have sparse training coverage and the predictor abstains over wide areas, by high invalid mass and by outcome disagreement near the true boundary. With more trajectories, the abstention regions shrink to a band around the boundary." width="350" height="412">
+      <figcaption>Illustration of training coverage and predicted outcomes. More trajectories reduce uncertainty. Abstention avoids forcing success or failure predictions where uncertainty remains. (Figure 1 of the paper.)</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap" id="method">
+  <div class="prose">
+    <h2>Method</h2>
+    <p><span class="mn">PAR</span> learns a conditional distribution over terminal states from trajectory data. At each queried initial state it checks how often sampled predictions satisfy the success and failure conditions. These estimates guide additional trajectory collection during training. At inference, a decision rule returns success, failure, or abstention.</p>
+  </div>
+  <figure class="plate plate-wide">
+    <img src="assets/figures/pipeline.svg" alt="Pipeline diagram. Trajectories give training pairs of a state and its terminal state. A flow-matching terminal-state model draws M samples per query state, which fall in the success set, the failure set, or neither. Their fractions are the outcome probabilities. These feed the acquisition score for adaptive sampling during training and, after training, the thresholds that define the outcome predictor." width="820" height="264">
+    <figcaption>Predicted terminal states yield outcome probabilities for adaptive sampling and prediction. (Figure 2 of the paper.)</figcaption>
+  </figure>
+  <div class="steps">
+    <div class="step">
+      <h3>Terminal-state model</h3>
+      <p>Under the deterministic autonomous dynamics, all nonterminal states along a trajectory lead to the same terminal state <span class="tex" data-tex="x_T"></span>. Each trajectory therefore supplies training pairs <span class="tex" data-tex="(x_t, x_T)"></span>. <span class="mn">PAR</span> learns the predictive distribution <span class="tex" data-tex="\hat{\Phi}(\cdot \mid x)"></span> from these pairs using conditional flow matching.</p>
+    </div>
+    <div class="step">
+      <h3>Outcome probabilities</h3>
+      <p>For a queried initial state, <span class="mn">PAR</span> draws <span class="tex" data-tex="M"></span> terminal-state predictions. A prediction is valid if it lies in the success set or the failure set and invalid otherwise, because the stopping rule permits termination only in these sets. The fractions give <span class="tex" data-tex="\hat{p}_{\mathrm{s}}(x)"></span>, <span class="tex" data-tex="\hat{p}_{\mathrm{f}}(x)"></span>, and the invalid mass <span class="tex" data-tex="\hat{p}_{\mathrm{inv}}(x) = 1 - \hat{p}_{\mathrm{s}}(x) - \hat{p}_{\mathrm{f}}(x)"></span>.</p>
+    </div>
+    <div class="step">
+      <h3>Adaptive sampling</h3>
+      <p>Invalid mass <span class="tex" data-tex="I(x) = \hat{p}_{\mathrm{inv}}(x)"></span> exposes model error. Disagreement among valid predictions gives <span class="tex" data-tex="D(x) = (1 - I(x))\, H_2\!\big(\hat{p}_{\mathrm{s}}(x) / (\hat{p}_{\mathrm{s}}(x) + \hat{p}_{\mathrm{f}}(x))\big)"></span>, with <span class="tex" data-tex="H_2"></span> the binary entropy in bits. Each round, a fraction <span class="tex" data-tex="\rho"></span> of the new trajectories starts from the candidates with the highest acquisition score <span class="tex" data-tex="U(x) = I(x) + D(x)"></span>, and the rest are sampled uniformly. The model is retrained from scratch after each round.</p>
+    </div>
+    <div class="step">
+      <h3>Outcome prediction</h3>
+      <p>Thresholds <span class="tex" data-tex="\tau = (\tau^{\mathrm{s}}_{\mathrm{s}}, \tau^{\mathrm{s}}_{\mathrm{f}}, \tau^{\mathrm{f}}_{\mathrm{s}}, \tau^{\mathrm{f}}_{\mathrm{f}})"></span> define a candidate success set <span class="tex" data-tex="\{\hat{p}_{\mathrm{s}} > \tau^{\mathrm{s}}_{\mathrm{s}},\ \hat{p}_{\mathrm{f}} \le \tau^{\mathrm{s}}_{\mathrm{f}}\}"></span> and a candidate failure set <span class="tex" data-tex="\{\hat{p}_{\mathrm{s}} \le \tau^{\mathrm{f}}_{\mathrm{s}},\ \hat{p}_{\mathrm{f}} > \tau^{\mathrm{f}}_{\mathrm{f}}\}"></span>. The predictor returns success or failure when the query lies in exactly one of them and abstains otherwise. The thresholds are fitted on validation data or certified on independent calibration data.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="guarantee">
+  <div class="prose">
+    <h2>Statistical guarantee</h2>
+    <p>Low validation error alone does not establish a bound on the probability that a prediction is wrong on a new query. Certification selects thresholds whose success and failure prediction errors satisfy specified limits <span class="tex" data-tex="\alpha_{\mathrm{s}}, \alpha_{\mathrm{f}}"></span> with confidence <span class="tex" data-tex="1 - \delta"></span>, using a calibration set that is separate from the validation set.</p>
+  </div>
+  <div class="theorem">
+    <p class="theorem-head">Theorem 1</p>
+    <p>Under Assumption 1, let <span class="tex" data-tex="\hat{y}_{\mathrm{cert}}"></span> be the predictor returned by fixed-sequence testing of <span class="tex" data-tex="\tau_1, \ldots, \tau_B"></span>. With probability at least <span class="tex" data-tex="1 - \delta"></span> over the calibration queries,</p>
+    <p class="theorem-math"><span class="tex" data-tex="\mathrm{Err}_{\mathrm{s}}(\hat{y}_{\mathrm{cert}}) \le \alpha_{\mathrm{s}} \quad\text{and}\quad \mathrm{Err}_{\mathrm{f}}(\hat{y}_{\mathrm{cert}}) \le \alpha_{\mathrm{f}}." data-display="1"></span></p>
+  </div>
+  <div class="prose">
+    <p><span class="tex" data-tex="\mathrm{Err}_{\ell}"></span> is the probability that a returned outcome <span class="tex" data-tex="\ell"></span> is wrong for a new query drawn from the same distribution as the calibration queries, under the same prediction protocol. Assumption 1 requires the error limits, the confidence parameter, and the calibration-set size to be fixed before the calibration data is drawn, and the calibration queries to be independent copies of a new query, jointly independent of the trained estimator and of the threshold sequence.</p>
+    <p>Certification tests a predetermined sequence of threshold settings with one-sided Clopper–Pearson bounds and stops at the first one that does not pass, returning the last setting that passed. Each bound uses the full <span class="tex" data-tex="\delta"></span>, with no correction for the number of threshold settings or outcomes. If no setting passes, the predictor abstains for every query. The sequence starts with conservative settings and progresses toward higher recall. The bounds quantify the reliability of both decisions, even when the predictor abstains on many other states. The experiments use <span class="tex" data-tex="\alpha_{\mathrm{s}} = \alpha_{\mathrm{f}} = \delta = 0.05"></span>.</p>
+  </div>
+</section>
+
+<section class="band" id="results">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Results</h2>
+      <p>The six settings span 2 to 12 dimensions and use LQR controllers or RL controllers trained with PPO. The pendulum and cartpole stabilize an upright equilibrium, with the cartpole also targeting a fixed cart position. Both quadrotors target level hover at unit height, with zero yaw for the spatial quadrotor. Reported rates are mean test percentages over three seeds.</p>
+    </div>
+
+    <div class="bench">
+      <figure class="plate systems">
+        <div class="systems-row">
+          <div class="sys"><img src="assets/figures/system_pendulum.png" alt="Pendulum" width="244" height="300"><span>Pendulum</span></div>
+          <div class="sys"><img src="assets/figures/system_cartpole.png" alt="Cartpole" width="311" height="300"><span>Cartpole</span></div>
+          <div class="sys wide"><img src="assets/figures/system_planar_quadrotor.png" alt="Planar quadrotor" width="902" height="300"><span>Planar quadrotor</span></div>
+          <div class="sys wide"><img src="assets/figures/system_spatial_quadrotor.png" alt="Spatial quadrotor" width="770" height="300"><span>Spatial quadrotor</span></div>
+        </div>
+        <figcaption>Benchmark systems (Appendix B.1 of the supplement).</figcaption>
+      </figure>
+      <div class="settings-tbl" id="settings-tbl" hidden>
+        <div class="tbl-scroll"><table id="settings-table"></table></div>
+        <p class="tbl-cap">Number of training trajectories and of validation, calibration, and test states, and test success rates (Table 1 of the paper). Low success rates reflect evaluation across the state space, including states outside the controllers' training or recovery regions, such as upside-down quadrotor states.</p>
+      </div>
+    </div>
+
+    <div class="tbl" id="tbl" hidden>
+      <div class="ex-controls">
+        <div class="ctl">
+          <span class="ctl-label" id="tbl-setting-label">Setting</span>
+          <div class="seg" id="tbl-settings" role="radiogroup" aria-labelledby="tbl-setting-label"></div>
+        </div>
+        <div class="ctl">
+          <span class="ctl-label" id="tbl-mode-label">Thresholds</span>
+          <div class="seg" id="tbl-modes" role="radiogroup" aria-labelledby="tbl-mode-label"></div>
+        </div>
+      </div>
+      <div class="tbl-scroll"><table id="tbl-table"></table></div>
+      <p class="tbl-cap" id="tbl-cap"></p>
+    </div>
+
+    <div class="findings prose">
+      <p><strong>Against prior-method adaptations.</strong> At the reported trajectory budgets, <span class="mn">PAR</span> achieves higher mean success recall than all four prior-method adaptations at fitted thresholds in every setting. Its largest advantage occurs on planar quadrotor RL (6D): 77.9% recall versus 24.2% for Part-X, with lower success prediction error. The comparison evaluates these adaptations, not the original methods' guarantees.</p>
+      <p><strong>With certification.</strong> <span class="mn">PARSE</span> has the highest mean recall for both outcomes among the three learned predictors on the pendulum and all three quadrotor settings. Both cartpole settings are exceptions: BNN-Label has higher success recall under LQR, while <span class="mn">PARSE</span>-BNN leads both recalls under RL.</p>
+      <p><strong>Adaptive sampling.</strong> With certification, adaptive sampling raises both mean recalls and reduces abstention in every setting relative to uniform sampling. The recall gains are larger under RL and largest on the planar quadrotor (6D).</p>
+    </div>
+
+    <div class="figs">
+      <figure class="plate">
+        <img src="assets/figures/predictor_comparison_compact.svg" alt="Scatter panels of recall against prediction error for success and failure predictions on spatial quadrotor LQR and cartpole RL, for Unif-PAR, Unif-PAR-BNN and Unif-BNN-Label, each at fitted and certified thresholds with a line joining the two." width="346" height="332">
+        <figcaption>Fitted and certified predictors on identical uniform training data, shown as seed means with min–max bars. On spatial quadrotor LQR, Unif-<span class="mn">PAR</span> retains far more correct failure predictions after certification than Unif-BNN-Label (90.3% versus 37.0% recall), despite similar fitted recall. This higher recall comes with higher failure prediction error. On cartpole RL, however, Unif-BNN-Label retains higher success recall and similar failure recall. Terminal-state supervision alone therefore does not ensure higher recall. (Figure 3 of the paper.)</figcaption>
+      </figure>
+      <figure class="plate">
+        <img src="assets/figures/pendulum_coverage_acquisition_2x2.svg" alt="Four maps of the pendulum state space after two acquisition rounds: distance to training states, invalid mass I, weighted disagreement D, and acquisition score U with the next selected initial states. Three circled regions mark a boundary region with dense coverage, a well-covered region with large invalid mass, and a sparsely covered boundary region." width="302" height="326">
+        <figcaption>Training coverage and acquisition signals for <span class="mn">PAR</span> on pendulum LQR. Across three pendulum seeds (Appendix D), regions sparsely covered by training data show large invalid mass, as in circled region 3, although large invalid mass also occurs in well-covered regions such as region 2. High disagreement occurs almost exclusively where training coverage is dense and concentrates near the outcome boundary, as in region 1. (Figure 4 of the paper.)</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="wrap prose" id="limitations">
+  <h2>Limitations</h2>
+  <p><span class="mn">PAR</span> and <span class="mn">PARSE</span> assume deterministic dynamics, noise-free observations, and finite termination in success or failure. Data demands remain substantial: the spatial quadrotor RL setting (12D) uses 40,000 simulated training trajectories for one controller. Future work should study sim-to-real transfer with limited physical-system trajectories while accounting for stochastic dynamics, observation noise, and simulator mismatch.</p>
+</section>
+
+<section class="wrap prose" id="cite">
+  <h2>BibTeX</h2>
+  <div class="bib">
+    <button type="button" class="copy" id="bib-copy">Copy</button>
+<pre id="bib-text">@misc{tangirala2026parse,
+  title  = {Uncertainty-Aware Reach-Avoid Estimation with Statistical Guarantees},
+  author = {Tangirala, Sumanth and Ramesh, Dhruv Metha and Vieira, Ewerton R. and
+            Boularias, Abdeslam and Hung, Ying and Bekris, Kostas E.},
+  year   = {2026},
+  note   = {Under review at L4DC 2027}
 }</pre>
-<footer>Rutgers University</footer>
+  </div>
+</section>
+
 </main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Rutgers University</p>
+  </div>
+</footer>
+
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/explorer/data.js"></script>
+<script src="assets/js/site.js"></script>
 </body>
 </html>
