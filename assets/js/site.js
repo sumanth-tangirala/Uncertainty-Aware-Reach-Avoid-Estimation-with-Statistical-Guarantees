@@ -457,6 +457,12 @@
   };
   var PRIOR = { 'DeepReach': 1, 'Lyapunov NN': 1, 'MORALS': 1, 'Part-X GP': 1 };
 
+  /* a row label in math may hold two statements (error limit, confidence); each is its own span so a phone can break between them */
+  function rowLabel(r) {
+    if (!r.tex) return methodName(r.method);
+    var parts = r.tex.split(',\\ ');
+    return parts.map(function (p, i) { return texp(p, i < parts.length - 1 ? ',' : ''); }).join(' ');
+  }
   function rateTable(root, name, n) {
     var cfg = TABLES[name];
     if (!cfg || !D.tables[cfg.modes[0].key]) return;
@@ -475,7 +481,7 @@
       var prev = null;
       rows.forEach(function (r) {
         var grp = cfg.group ? (PRIOR[r.method] ? 'prior' : /Label|BNN/.test(r.method) ? 'bnn' : 'fm') : null;
-        h += '<tr' + (prev && grp !== prev ? ' class="sep"' : '') + '><th scope="row">' + (r.tex ? tex(r.tex) : methodName(r.method)) + '</th>' + r.cells.map(function (c) {
+        h += '<tr' + (prev && grp !== prev ? ' class="sep"' : '') + '><th scope="row">' + rowLabel(r) + '</th>' + r.cells.map(function (c) {
           return '<td class="num' + (c[1] ? ' best' : '') + '">' + esc(c[0]) + (c[2] ? '<sup>†</sup>' : '') + '</td>';
         }).join('') + '</tr>';
         prev = grp;

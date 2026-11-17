@@ -17,6 +17,7 @@
   --plate-ink: #1c1a26;
   --plate-muted: #4a4858;
   --map-ground: #e9e8ef;     /* behind cells that are not drawn */
+  --shade: rgba(28, 26, 38, 0.2);   /* edge of a table that has more to scroll to */
   --nav-h: 2.75rem;
   --budget-h: 5rem;         /* height of the sticky slider card, set by the script */
 
@@ -49,6 +50,7 @@
     --accent-ink: #15141b;
     --focus: #8db8ff;
     --map-ground: #2b2a35;
+    --shade: rgba(0, 0, 0, 0.55);
     --c-success: #6aa8e6;
     --c-failure: #dc9560;
     --c-abst: #a3a0ad;
@@ -67,6 +69,7 @@
   --accent-ink: #15141b;
   --focus: #8db8ff;
   --map-ground: #2b2a35;
+  --shade: rgba(0, 0, 0, 0.55);
   --c-success: #6aa8e6;
   --c-failure: #dc9560;
   --c-abst: #a3a0ad;
@@ -318,8 +321,18 @@ canvas { display: block; image-rendering: pixelated; }
 .theorem-head { font-weight: 600; margin-bottom: 0.3rem; }
 .theorem-math { position: relative; overflow-x: auto; overflow-y: hidden; padding-block: 0.3rem; text-align: center; }
 
-/* position: relative keeps the math's hidden accessibility boxes inside the scroll area */
-.tbl-scroll { position: relative; overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; max-width: 46rem; }
+/* position: relative keeps the math's hidden accessibility boxes inside the scroll area.
+   A table wider than its box shows a shade on the edge that has more to scroll to: the two shades stay on the
+   box edges, and the two covers move with the table and hide the shade once that end is reached. */
+.tbl-scroll {
+  position: relative; overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; max-width: 46rem;
+  background:
+    linear-gradient(to right, var(--surface) 40%, transparent) left center / 2.4rem 100% no-repeat local,
+    linear-gradient(to left, var(--surface) 40%, transparent) right center / 2.4rem 100% no-repeat local,
+    linear-gradient(to right, var(--shade), transparent) left center / 0.9rem 100% no-repeat scroll,
+    linear-gradient(to left, var(--shade), transparent) right center / 0.9rem 100% no-repeat scroll,
+    var(--surface);
+}
 table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
 th, td { padding: 0.5rem 0.8rem; text-align: right; white-space: nowrap; }
 th:first-child, td:first-child { text-align: left; }
@@ -408,5 +421,20 @@ pre { background: var(--surface); border: 1px solid var(--rule); border-radius: 
   .topnav-links { display: none; }
   .toc-menu { margin-left: auto; }
   .toc-pop { left: auto; right: 0; }
-  th, td { padding: 0.45rem 0.55rem; }
+  /* phones: smaller type and tighter cells so the six- and seven-column tables fit without sideways scrolling */
+  table { font-size: 0.82rem; }
+  thead th { font-size: 0.8rem; }
+  th, td, .settings-tbl td, .settings-tbl th { padding: 0.42rem 0.3rem; }
+  .settings-tbl td, .settings-tbl th { font-size: 0.82rem; }
+  .settings-tbl td:first-child, tbody th { white-space: normal; }
+  tbody th .tex { white-space: nowrap; }
+  th:first-child, td:first-child { padding-left: 0.6rem; }
+  th:last-child, td:last-child { padding-right: 0.6rem; }
+}
+@media (max-width: 24rem) {
+  table, .settings-tbl td, .settings-tbl th { font-size: 0.76rem; }
+  thead th { font-size: 0.74rem; }
+  th, td, .settings-tbl td, .settings-tbl th { padding-inline: 0.2rem; }
+  th:first-child, td:first-child { padding-left: 0.5rem; }
+  th:last-child, td:last-child { padding-right: 0.5rem; }
 }
