@@ -435,11 +435,11 @@
     },
     samples: {
       head: tex('M'), modes: [{ key: 'samples' }],
-      cap: { samples: 'Certification of <span class="mn">PAR</span> after adaptive sampling with ' + tex('M') + ' terminal-state predictions per candidate. ' + MEANS + ' ' + SHADE }
+      cap: { samples: '<span class="mn">PARSE</span> after adaptive sampling with ' + tex('M') + ' terminal-state predictions per candidate. ' + MEANS + ' ' + SHADE }
     },
     limits: {
       head: 'Limits', modes: [{ key: 'limits' }],
-      cap: { limits: 'Certification of <span class="mn">PAR</span> at error limits ' + tex('\\alpha') + ' and confidence parameters ' + texp('\\delta', '.') + ' ' + MEANS +
+      cap: { limits: '<span class="mn">PARSE</span> at error limits ' + tex('\\alpha') + ' and confidence parameters ' + texp('\\delta', '.') + ' ' + MEANS +
         ' A dash marks an outcome predicted in no seed. An abstention of 100% means certification returned the all-abstain predictor in every seed. The mark † means the calibration set holds fewer successful states than any threshold setting needs to pass (Appendix A.4).' }
     },
     identical: {
@@ -451,7 +451,7 @@
       modes: [{ key: 'mlp_fitted', label: 'Fitted on validation data' }, { key: 'mlp_certified', label: 'Certified on calibration data' }],
       cap: {
         mlp_fitted: 'Comparison of <span class="mn">PAR</span> with its MLP counterparts at fitted thresholds. ' + MEANS + ' ' + SHADE,
-        mlp_certified: 'Certification of <span class="mn">PAR</span> and its MLP counterparts at ' + texp(A05, '.') + ' ' + MEANS + ' ' + SHADE
+        mlp_certified: '<span class="mn">PARSE</span> and its MLP counterparts, certified at ' + texp(A05, '.') + ' ' + MEANS + ' ' + SHADE
       }
     }
   };
