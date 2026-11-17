@@ -530,12 +530,17 @@
       document.addEventListener('click', function (ev) { if (menu.hasAttribute('open') && !menu.contains(ev.target)) menu.removeAttribute('open'); });
     }
     var links = Array.prototype.slice.call(document.querySelectorAll('#toc-nav a, #toc-pop a'));
+    var tops = Array.prototype.slice.call(nav.querySelectorAll('.toc-list > li'));
+    if ($('#toc')) $('#toc').classList.add('js');
     var ids = [];
     links.forEach(function (l) { var id = l.getAttribute('href').slice(1); if (ids.indexOf(id) < 0 && document.getElementById(id)) ids.push(id); });
     var ticking = false;
     function mark() {
       ticking = false;
-      var line = Math.max(96, 0.3 * window.innerHeight), current = ids[0];       /* a reading line 30% down the window */
+      /* a reading line 30% down the window; it slides to the bottom edge over the last stretch of the page,
+         so the short closing sections are marked too */
+      var h = window.innerHeight, left = document.documentElement.scrollHeight - window.scrollY - h;
+      var line = Math.max(96, 0.3 * h, h - Math.max(left, 0)), current = ids[0];
       for (var i = 0; i < ids.length; i++) {
         if (document.getElementById(ids[i]).getBoundingClientRect().top <= line) current = ids[i];
       }
@@ -543,6 +548,7 @@
         var on = l.getAttribute('href') === '#' + current;
         if (on) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
       });
+      tops.forEach(function (li) { li.classList.toggle('open', !!li.querySelector('a[aria-current="true"]')); });
       var act = $('#toc-nav a[aria-current="true"]'), box = $('#toc');
       if (act && box && box.scrollHeight > box.clientHeight) {
         var r = act.getBoundingClientRect(), b = box.getBoundingClientRect();
