@@ -34,7 +34,7 @@
   --serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --measure: 68ch;
+  --measure: 60ch;           /* ch is the width of a zero, so this is about 78 characters of text */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -349,12 +349,15 @@ td.best { background: color-mix(in srgb, var(--c-success) 22%, transparent); }
 a.apx:hover { color: var(--ink); border-color: var(--ink); }
 .exp .plate-wide { margin-block: 1rem 1.25rem; }
 .exp .tbl { margin-block: 1rem 1.25rem; }
-.exp .prose p { max-width: 76ch; }
 .figsw { margin-top: 1rem; }
 .figsw .plate-wide { margin-top: 0.25rem; }
-.defs { margin: 0 0 1rem; padding-left: 1.2rem; max-width: 76ch; }
+.defs { margin: 0 0 1rem; padding-left: 1.2rem; max-width: var(--measure); }
 .defs li { margin-bottom: 0.45rem; }
-.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); gap: 1.25rem; align-items: start; margin-bottom: 1.75rem; }
+/* systems card with the table's caption under it, the table beside both; on a phone: card, table, caption */
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); grid-template-areas: "sys tbl" "cap tbl"; grid-template-rows: auto 1fr; gap: 0.75rem 1.25rem; align-items: start; margin-bottom: 1.75rem; }
+.bench .systems { grid-area: sys; }
+.bench .settings-tbl { grid-area: tbl; }
+.bench .settings-cap { grid-area: cap; margin: 0; }
 .settings-tbl { max-width: 33rem; }
 .systems-row { display: grid; grid-template-columns: 0.55fr 0.7fr 1.5fr 1.5fr; gap: 0.75rem; align-items: end; }
 .sys { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; min-width: 0; font-size: 0.82rem; color: var(--plate-muted); text-align: center; }
@@ -384,6 +387,7 @@ pre { background: var(--surface); border: 1px solid var(--rule); border-radius: 
   body { font-size: 1rem; }
   h1 br { display: none; }
   .split, .steps, .bench, .plate-side { grid-template-columns: minmax(0, 1fr); }
+  .bench { grid-template-areas: "sys" "tbl" "cap"; grid-template-rows: none; }
   .plate-side img { width: min(100%, 21rem); }
   .systems-row { grid-template-columns: 0.6fr 0.8fr; }
   .systems-row .wide { grid-column: 1 / -1; }

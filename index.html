@@ -260,8 +260,8 @@
         </figure>
         <div class="settings-tbl" id="settings-tbl" hidden>
           <div class="tbl-scroll"><table id="settings-table"></table></div>
-          <p class="tbl-cap">Number of training trajectories and of validation, calibration, and test states, and test success rates (Table 1 of the paper). Low success rates reflect evaluation across the state space, including states outside the controllers' training or recovery regions, such as upside-down quadrotor states.</p>
         </div>
+        <p class="tbl-cap settings-cap" id="settings-cap" hidden>Number of training trajectories and of validation, calibration, and test states, and test success rates (Table 1 of the paper). Low success rates reflect evaluation across the state space, including states outside the controllers' training or recovery regions, such as upside-down quadrotor states.</p>
       </div>
     </div>
 
@@ -354,8 +354,8 @@
       <p class="eyebrow">Results</p>
       <h2>Sampling</h2>
       <article class="exp" id="x-curves">
-        <h3>Learning curves in all settings <a class="apx" href="assets/paper.pdf#page=10">Paper Figure 5</a> <a class="apx" href="assets/supplementary.pdf#page=6">Appendix B.3</a></h3>
-        <div class="prose"><p>The <a href="#explorer">explorer</a> steps through these curves one setting at a time. The figure shows all six settings together, as printed in the supplement.</p></div>
+        <h3>Learning curves in all settings <a class="apx" href="assets/paper.pdf#page=10">Extends Paper Figure 5</a> <a class="apx" href="assets/supplementary.pdf#page=6">Appendix B.3</a></h3>
+        <div class="prose"><p>The figure extends Figure 5 of the paper to all six settings. The <a href="#explorer">explorer</a> steps through these curves one setting at a time.</p></div>
         <figure class="plate plate-wide">
           <img src="assets/figures/adaptive_learning_full.svg" alt="Six panels of learning curves, one per setting, each with recall and abstention above and prediction error below, for PARSE with solid lines and Unif-PARSE with dash-dot lines over the training trajectory budget." width="864" height="537" loading="lazy">
           <figcaption><span class="mn">PARSE</span> and Unif-<span class="mn">PARSE</span> learning curves in all six settings. Shaded areas in the upper panels show <span class="tex" data-tex="\widehat{\mathrm{Abst}}"></span>. Recall and abstention average all three seeds; faded error markers indicate fewer contributing seeds, and gaps indicate none.</figcaption>

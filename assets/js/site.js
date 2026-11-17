@@ -562,9 +562,10 @@
 
   /* ================================================================== settings (Table 1) */
   function settingsTable() {
-    var root = $('#settings-tbl');
+    var root = $('#settings-tbl'), cap = $('#settings-cap');
     if (!D || !root) return;
     root.hidden = false;
+    if (cap) cap.hidden = false;
     var k = function (n) { return n >= 10000 ? Math.round(n / 1000) + 'K' : countLabel(n); };
     var h = '<thead><tr><th scope="col">Setting</th><th scope="col">Dim.</th><th scope="col">Train</th><th scope="col">Val.</th><th scope="col">Cal.</th><th scope="col">Test</th><th scope="col">Success</th></tr></thead><tbody>';
     D.settings.forEach(function (S) {
